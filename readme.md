@@ -8,7 +8,7 @@ Among the options to do:
  - search for analysis results by: sample id, analysis report id, water quality indicator name;
  - search by partial name of contact person or client;
  - search water sample by client or contract id or by receiving date between;
- - update partially an entity's details.
+ - partially update an entity's details.
 
    
 **Notes**: 
