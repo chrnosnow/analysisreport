@@ -1,28 +1,177 @@
-# Water samples analysis reports generation project
+# Analysis Report API
 
-This API was created for learning purposes of Spring Boot and Java. 
-The API uses an in-memory database managed by the H2 Database Engine.
-Start the API by running the AnalysisReportApplication file.
-Among the options to do:
- - search analysis reports by the following filters: issue date, client id, contract id, analyst id;
- - search for analysis results by: sample id, analysis report id, water quality indicator name;
- - search by partial name of contact person or client;
- - search water sample by client or contract id or by receiving date between;
- - partially update an entity's details.
+## Overview
+Water laboratories need to capture sampling details, track contractual context, and publish results in formal reports. This project provides a Spring Boot REST API that models that workflow end-to-end: clients sign contracts, samples are registered, indicators are configured, and reports/results are produced. The code base was created as a learning exercise and now serves as a full example of how to wire Spring Data JPA, custom queries, and request validation into a cohesive service.
 
-   
-**Notes**: 
-1. An analysis report can have only a part of the quality indicators requested initially. 
-2. Multiple (maybe not more than 2) analysis reports can be issued for the same sample; e.g., due to various errors on the first report that was already given to the client.
+## Key Capabilities
+- CRUD flows for administrators, analysts, clients, contracts, water samples, quality indicators, and lab results
+- Rich search operations: partial-name lookups, filtered report queries, and result searches by indicator name
+- Seed data loaded via `CommandLineRunner` for immediate experimentation
+- File-based H2 database for easy local persistence and SQL console access
+- Consistent date/time formatting (`dd.MM.yyyy`, `HH:mm:ss`) enforced across request/response payloads
 
-## Database schema
+## Tech Stack
+- Java 20
+- Spring Boot 3.1 (web, data-jpa, validation)
+- H2 Database (file mode)
+- Lombok (DTO/entity boilerplate)
+- Maven build tooling
+- JUnit + Spring Boot Test starter
+
+## Project Layout
+```
+src/main/java/com/example/analysisreport
+|- admin | analyst | client | contact_person | contract
+|  |- controller        REST endpoints
+|  |- entity            JPA models
+|  |- repository        Spring Data repositories
+|- quality_indicator    CRUD + search for water quality indicators
+|- report               Report CRUD + specification-based search
+|- results              Result CRUD + native search implementation
+|- water_sample         Sample lifecycle and date range searches
+|- AnalysisReportApplication.java   Spring Boot entry point + seed data
+```
+Configuration lives in `src/main/resources/application.properties`.
+
+## Getting Started
+1. Install JDK 20 and Maven 3.9+.
+2. Clone the repository and open it in your IDE (Lombok plugin required for getters/setters to compile inside the IDE).
+3. Build once to download dependencies:
+   ```bash
+   mvn clean package
+   ```
+4. Run the application:
+   ```bash
+   mvn spring-boot:run
+   ```
+   The API starts on `http://localhost:8080`.
+
+### Database & Console
+- Default JDBC URL: `jdbc:h2:file:~/analysis_report_data.db`
+- H2 console is enabled at `http://localhost:8080/h2-console`
+- Schema is dropped/recreated on each run (`spring.jpa.hibernate.ddl-auto=create-drop`)
+
+### Seed Data
+`AnalysisReportApplication` implements `CommandLineRunner` and inserts sample clients, contact people, contracts, water samples, indicators, reports, and results. This makes the API usable immediately after startup for demos or manual testing.
+
+## API Overview
+All endpoints exchange JSON unless otherwise noted.
+
+### Administration
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| GET | `/api/admins` | List administrators |
+| POST | `/api/admins/add` | Create administrator |
+| PUT | `/api/admins/update/{adminId}` | Partial update by ID |
+| DELETE | `/api/admins/delete/{adminId}` | Delete by ID |
+
+### Analysts
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| GET | `/api/analysts` | List analysts |
+| GET | `/api/analysts/search?str=...` | Search description substring |
+| POST | `/api/analysts/add` | Create analyst |
+| PUT | `/api/analysts/update/{analystId}` | Partial update by ID |
+| DELETE | `/api/analysts/delete/{analystId}` | Delete by ID |
+
+### Clients & Contacts
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| GET | `/api/clients` | List clients |
+| GET | `/api/clients/ascending` | List clients alphabetically |
+| GET | `/api/clients/{name}` | Search clients by partial name |
+| GET | `/api/clients/client/{id}` | Fetch client by ID |
+| POST | `/api/clients/add` | Create client |
+| PUT | `/api/clients/update/{clientId}` | Partial update by ID |
+| DELETE | `/api/clients/client/{id}` | Delete client |
+| GET | `/api/contact-persons` | List contact people |
+| GET | `/api/contact-persons/{clientName}` | Search contacts by client name |
+| POST | `/api/contact-persons/add/{clientId}` | Create contact person for client |
+| PUT | `/api/contact-persons/update/{contactPersonId}` | Partial update |
+| DELETE | `/api/contact-persons/delete/{contactPersonId}` | Delete contact person |
+
+### Contracts
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| GET | `/api/contracts` | List contracts |
+| GET | `/api/contracts/{clientName}` | Filter contracts by client name |
+| POST | `/api/contracts/add/{clientId}` | Create contract linked to client |
+| PUT | `/api/contracts/update/{contractId}` | Partial update |
+| DELETE | `/api/contracts/delete/{contractId}` | Delete contract |
+
+### Water Samples
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| GET | `/api/water-samples` | List samples |
+| GET | `/api/water-samples/search/{clientId}` | Samples for a client ID |
+| GET | `/api/water-samples/search/{contractId}` | Samples for a contract ID |
+| GET | `/api/water-samples/search?startDate=dd.MM.yyyy&endDate=dd.MM.yyyy` | Samples received in date range |
+| POST | `/api/water-samples/add/{clientId}` | Register sample for client |
+| PUT | `/api/water-samples/update/{sampleId}` | Partial update |
+| DELETE | `/api/water-samples/delete/{sampleId}` | Delete sample |
+
+### Reports
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| GET | `/api/reports/get/all` | List reports |
+| GET | `/api/reports/get/{sampleId}` | Fetch report by water sample |
+| POST | `/api/reports/add` | Create report |
+| POST | `/api/reports/search` | Filter by issue dates, analyst, client, or contract |
+| PUT | `/api/reports/update/{reportId}` | Partial update using JSON merge |
+| DELETE | `/api/reports/delete/{reportId}` | Delete report |
+
+### Quality Indicators & Results
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| GET | `/api/indicators` | List indicators |
+| GET | `/api/indicators/get/{name}` | Search indicators by partial name |
+| POST | `/api/indicators/add` | Create indicator |
+| PUT | `/api/indicators/update/{indicatorId}` | Partial update |
+| DELETE | `/api/indicators/delete/{indicatorId}` | Delete indicator |
+| GET | `/api/results/get/{resultId}` | Fetch lab result by ID |
+| POST | `/api/results/add` | Record result |
+| POST | `/api/results/search` | Filter results by sample/report ID and indicator name |
+| PUT | `/api/results/update/{resultId}` | Partial update |
+| DELETE | `/api/results/delete/{resultId}` | Delete result |
+
+## Example Requests
+Search reports issued in April 2022 for a specific analyst:
+```bash
+curl -X POST http://localhost:8080/api/reports/search \
+  -H "Content-Type: application/json" \
+  -d '{
+        "startDate": "01.04.2022",
+        "endDate": "30.04.2022",
+        "analystId": 2
+      }'
+```
+
+Find results for sample 1 that mention indicator Fe:
+```bash
+curl -X POST http://localhost:8080/api/results/search \
+  -H "Content-Type: application/json" \
+  -d '{
+        "sampleId": 1,
+        "qualityIndicatorName": "Fe"
+      }'
+```
+
+Create a new quality indicator:
+```bash
+curl -X POST http://localhost:8080/api/indicators/add \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "pH",
+        "measurementUnit": "",
+        "accredited": "YES"
+      }'
+```
+
+## Data Model
+The ER diagram below mirrors the entity relationships. PlantUML is kept so you can regenerate the image with any PlantUML renderer.
 
 ```plantuml
 @startuml
-' hide the spot
-' hide circle
-
-' avoid problems with angled crows feet
 skinparam linetype ortho
 
 entity "CLIENTS" as client {
@@ -127,3 +276,13 @@ result ||..|| quality_indicator
 
 @enduml
 ```
+
+## Testing & Quality
+- Run unit/integration tests: `mvn test`
+- Custom repository logic (`CustomResultsRepositoryImpl`) should be covered before changes because it uses manually mapped result sets.
+
+## Troubleshooting
+- If the application fails to start, verify that no other process occupies port 8080.
+- For IDE compilation errors, ensure annotation processing is enabled so Lombok can generate getters/setters.
+- Delete `analysis_report_data.db*` in your user home directory if you want a clean database between runs.
+
