@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/admins")
+@RequestMapping("/api/v1/admins")
 public class AdminController {
     private AdminRepository adminRepository;
 

@@ -60,79 +60,79 @@ All endpoints exchange JSON unless otherwise noted.
 ### Administration
 | Method | Path | Description |
 | ------ | ---- | ----------- |
-| GET | `/api/admins` | List administrators |
-| POST | `/api/admins/add` | Create administrator |
-| PUT | `/api/admins/update/{adminId}` | Partial update by ID |
-| DELETE | `/api/admins/delete/{adminId}` | Delete by ID |
+| GET | `/api/v1/admins` | List administrators |
+| POST | `/api/v1/admins/add` | Create administrator |
+| PUT | `/api/v1/admins/update/{adminId}` | Partial update by ID |
+| DELETE | `/api/v1/admins/delete/{adminId}` | Delete by ID |
 
 ### Analysts
 | Method | Path | Description |
 | ------ | ---- | ----------- |
-| GET | `/api/analysts` | List analysts |
-| GET | `/api/analysts/search?str=...` | Search description substring |
-| POST | `/api/analysts/add` | Create analyst |
-| PUT | `/api/analysts/update/{analystId}` | Partial update by ID |
-| DELETE | `/api/analysts/delete/{analystId}` | Delete by ID |
+| GET | `/api/v1/analysts` | List analysts |
+| GET | `/api/v1/analysts/search?str=...` | Search description substring |
+| POST | `/api/v1/analysts/add` | Create analyst |
+| PUT | `/api/v1/analysts/update/{analystId}` | Partial update by ID |
+| DELETE | `/api/v1/analysts/delete/{analystId}` | Delete by ID |
 
 ### Clients & Contacts
 | Method | Path | Description |
 | ------ | ---- | ----------- |
-| GET | `/api/clients` | List clients |
-| GET | `/api/clients/ascending` | List clients alphabetically |
-| GET | `/api/clients/{name}` | Search clients by partial name |
-| GET | `/api/clients/client/{id}` | Fetch client by ID |
-| POST | `/api/clients/add` | Create client |
-| PUT | `/api/clients/update/{clientId}` | Partial update by ID |
-| DELETE | `/api/clients/client/{id}` | Delete client |
-| GET | `/api/contact-persons` | List contact people |
-| GET | `/api/contact-persons/{clientName}` | Search contacts by client name |
-| POST | `/api/contact-persons/add/{clientId}` | Create contact person for client |
-| PUT | `/api/contact-persons/update/{contactPersonId}` | Partial update |
-| DELETE | `/api/contact-persons/delete/{contactPersonId}` | Delete contact person |
+| GET | `/api/v1/clients` | List clients |
+| GET | `/api/v1/clients/ascending` | List clients alphabetically |
+| GET | `/api/v1/clients/{name}` | Search clients by partial name |
+| GET | `/api/v1/clients/client/{id}` | Fetch client by ID |
+| POST | `/api/v1/clients/add` | Create client |
+| PUT | `/api/v1/clients/update/{clientId}` | Partial update by ID |
+| DELETE | `/api/v1/clients/client/{id}` | Delete client |
+| GET | `/api/v1/contact-persons` | List contact people |
+| GET | `/api/v1/contact-persons/{clientName}` | Search contacts by client name |
+| POST | `/api/v1/contact-persons/add/{clientId}` | Create contact person for client |
+| PUT | `/api/v1/contact-persons/update/{contactPersonId}` | Partial update |
+| DELETE | `/api/v1/contact-persons/delete/{contactPersonId}` | Delete contact person |
 
 ### Contracts
 | Method | Path | Description |
 | ------ | ---- | ----------- |
-| GET | `/api/contracts` | List contracts |
-| GET | `/api/contracts/{clientName}` | Filter contracts by client name |
-| POST | `/api/contracts/add/{clientId}` | Create contract linked to client |
-| PUT | `/api/contracts/update/{contractId}` | Partial update |
-| DELETE | `/api/contracts/delete/{contractId}` | Delete contract |
+| GET | `/api/v1/contracts` | List contracts |
+| GET | `/api/v1/contracts/{clientName}` | Filter contracts by client name |
+| POST | `/api/v1/contracts/add/{clientId}` | Create contract linked to client |
+| PUT | `/api/v1/contracts/update/{contractId}` | Partial update |
+| DELETE | `/api/v1/contracts/delete/{contractId}` | Delete contract |
 
 ### Water Samples
 | Method | Path | Description |
 | ------ | ---- | ----------- |
-| GET | `/api/water-samples` | List samples |
-| GET | `/api/water-samples/search/{clientId}` | Samples for a client ID |
-| GET | `/api/water-samples/search/{contractId}` | Samples for a contract ID |
-| GET | `/api/water-samples/search?startDate=dd.MM.yyyy&endDate=dd.MM.yyyy` | Samples received in date range |
-| POST | `/api/water-samples/add/{clientId}` | Register sample for client |
-| PUT | `/api/water-samples/update/{sampleId}` | Partial update |
-| DELETE | `/api/water-samples/delete/{sampleId}` | Delete sample |
+| GET | `/api/v1/water-samples` | List samples |
+| GET | `/api/v1/water-samples/search/{clientId}` | Samples for a client ID |
+| GET | `/api/v1/water-samples/search/{contractId}` | Samples for a contract ID |
+| GET | `/api/v1/water-samples/search?startDate=dd.MM.yyyy&endDate=dd.MM.yyyy` | Samples received in date range |
+| POST | `/api/v1/water-samples/add/{clientId}` | Register sample for client |
+| PUT | `/api/v1/water-samples/update/{sampleId}` | Partial update |
+| DELETE | `/api/v1/water-samples/delete/{sampleId}` | Delete sample |
 
 ### Reports
 | Method | Path | Description |
 | ------ | ---- | ----------- |
-| GET | `/api/reports/get/all` | List reports |
-| GET | `/api/reports/get/{sampleId}` | Fetch report by water sample |
-| POST | `/api/reports/add` | Create report |
-| POST | `/api/reports/search` | Filter by issue dates, analyst, client, or contract |
-| PUT | `/api/reports/update/{reportId}` | Partial update using JSON merge |
-| DELETE | `/api/reports/delete/{reportId}` | Delete report |
+| GET | `/api/v1/reports/get/all` | List reports |
+| GET | `/api/v1/reports/get/{sampleId}` | Fetch report by water sample |
+| POST | `/api/v1/reports/add` | Create report |
+| POST | `/api/v1/reports/search` | Filter by issue dates, analyst, client, or contract |
+| PUT | `/api/v1/reports/update/{reportId}` | Partial update using JSON merge |
+| DELETE | `/api/v1/reports/delete/{reportId}` | Delete report |
 
 ### Quality Indicators & Results
 | Method | Path | Description |
 | ------ | ---- | ----------- |
-| GET | `/api/indicators` | List indicators |
-| GET | `/api/indicators/get/{name}` | Search indicators by partial name |
-| POST | `/api/indicators/add` | Create indicator |
-| PUT | `/api/indicators/update/{indicatorId}` | Partial update |
-| DELETE | `/api/indicators/delete/{indicatorId}` | Delete indicator |
-| GET | `/api/results/get/{resultId}` | Fetch lab result by ID |
-| POST | `/api/results/add` | Record result |
-| POST | `/api/results/search` | Filter results by sample/report ID and indicator name |
-| PUT | `/api/results/update/{resultId}` | Partial update |
-| DELETE | `/api/results/delete/{resultId}` | Delete result |
+| GET | `/api/v1/indicators` | List indicators |
+| GET | `/api/v1/indicators/get/{name}` | Search indicators by partial name |
+| POST | `/api/v1/indicators/add` | Create indicator |
+| PUT | `/api/v1/indicators/update/{indicatorId}` | Partial update |
+| DELETE | `/api/v1/indicators/delete/{indicatorId}` | Delete indicator |
+| GET | `/api/v1/results/get/{resultId}` | Fetch lab result by ID |
+| POST | `/api/v1/results/add` | Record result |
+| POST | `/api/v1/results/search` | Filter results by sample/report ID and indicator name |
+| PUT | `/api/v1/results/update/{resultId}` | Partial update |
+| DELETE | `/api/v1/results/delete/{resultId}` | Delete result |
 
 ## Example Requests
 Search reports issued in April 2022 for a specific analyst:
@@ -276,10 +276,6 @@ result ||..|| quality_indicator
 
 @enduml
 ```
-
-## Testing & Quality
-- Run unit/integration tests: `mvn test`
-- Custom repository logic (`CustomResultsRepositoryImpl`) should be covered before changes because it uses manually mapped result sets.
 
 ## Troubleshooting
 - If the application fails to start, verify that no other process occupies port 8080.

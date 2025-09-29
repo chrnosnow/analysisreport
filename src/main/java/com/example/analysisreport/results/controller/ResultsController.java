@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/results")
+@RequestMapping("api/v1/results")
 public class ResultsController {
 
     private ResultsRepository resultsRepository;

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/indicators")
+@RequestMapping("api/v1/indicators")
 public class QualityIndicatorController {
     private QualityIndicatorRepository qiRepository;
 

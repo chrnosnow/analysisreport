@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/clients")
+@RequestMapping("api/v1/clients")
 public class ClientController {
     private ClientRepository clientRepository;
 
