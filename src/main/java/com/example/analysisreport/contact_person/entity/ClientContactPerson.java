@@ -36,9 +36,9 @@ public class ClientContactPerson {
     public ClientContactPerson() {
     }
 
-    public ClientContactPerson(Long id, Client client, String firstName, String lastName, String position,
+    public ClientContactPerson(Client client, String firstName, String lastName, String position,
                                String email, String phone) {
-        this.id = id;
+
         this.client = client;
         this.firstName = firstName;
         this.lastName = lastName;

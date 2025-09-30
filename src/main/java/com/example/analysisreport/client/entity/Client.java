@@ -19,9 +19,10 @@ public class Client {
     @Column(name = "ADDRESS")
     private String address;
 
-    public Client(){}
-    public Client(Long id, String name, String address){
-        this.id = id;
+    public Client() {
+    }
+
+    public Client(String name, String address) {
         this.name = name;
         this.address = address;
     }
