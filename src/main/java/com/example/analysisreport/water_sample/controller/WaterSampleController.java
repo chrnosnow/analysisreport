@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/water-samples")
+@RequestMapping("/api/v2/water-samples")
 public class WaterSampleController {
 
     private WaterSampleRepository waterSampleRepository;

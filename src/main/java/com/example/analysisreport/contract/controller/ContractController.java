@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/v1/contracts")
+@RequestMapping("api/v2/contracts")
 public class ContractController {
     private ContractRepository contractRepository;
     private ClientRepository clientRepository;

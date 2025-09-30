@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/v1/contact-persons")
+@RequestMapping("api/v2/contact-persons")
 public class ClientContactPersonController {
 
     private ClientRepository clientRepository;

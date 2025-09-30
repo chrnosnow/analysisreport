@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/v1/reports")
+@RequestMapping("api/v2/reports")
 public class ReportController {
     private ReportRepository reportRepository;
 
