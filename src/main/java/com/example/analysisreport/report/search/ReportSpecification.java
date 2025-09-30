@@ -1,7 +1,7 @@
 package com.example.analysisreport.report.search;
 
 import com.example.analysisreport.report.entity.Report;
-import com.example.analysisreport.water_sample.entity.WaterSample;
+import com.example.analysisreport.samples.entity.WaterSample;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 

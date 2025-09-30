@@ -14,8 +14,8 @@ import com.example.analysisreport.report.entity.Report;
 import com.example.analysisreport.report.repository.ReportRepository;
 import com.example.analysisreport.results.entity.Results;
 import com.example.analysisreport.results.repository.ResultsRepository;
-import com.example.analysisreport.water_sample.entity.WaterSample;
-import com.example.analysisreport.water_sample.repository.WaterSampleRepository;
+import com.example.analysisreport.samples.entity.WaterSample;
+import com.example.analysisreport.samples.repository.WaterSampleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -46,23 +46,23 @@ public class AnalysisReportApplication implements CommandLineRunner {
 
     public void run(String... args) throws Exception {
         // Create and save clients
-        Client client1 = new Client( "Panifcom", "Str. V. Loghin, nr. 35, Iasi");
-        Client client2 = new Client( "Borgwarner", "Str. A. Paulescu, nr. 2, com. Miroslava, Iasi");
-        Client client3 = new Client( "Primaria Falticeni", "Str. G. Protopopescu, nr. 1, com. Falticeni, Botosani");
-        Client client4 = new Client( "Borgw", "Str. E. Lupu nr. 106, Galati");
+        Client client1 = new Client("Panifcom", "Str. V. Loghin, nr. 35, Iasi");
+        Client client2 = new Client("Borgwarner", "Str. A. Paulescu, nr. 2, com. Miroslava, Iasi");
+        Client client3 = new Client("Primaria Falticeni", "Str. G. Protopopescu, nr. 1, com. Falticeni, Botosani");
+        Client client4 = new Client("Borgw", "Str. E. Lupu nr. 106, Galati");
         client1 = clientRepo.save(client1);
         client2 = clientRepo.save(client2);
         client3 = clientRepo.save(client3);
         client4 = clientRepo.save(client4);
 
         // Create and save contact persons
-        ClientContactPerson contactPerson1 = new ClientContactPerson( client1, "Paula", "Avadani", "inginer",
+        ClientContactPerson contactPerson1 = new ClientContactPerson(client1, "Paula", "Avadani", "inginer",
                 "pava****@panifcom.ro", "0752*****");
-        ClientContactPerson contactPerson2 = new ClientContactPerson( client2, "Corina", "Volf", "responsabil " +
+        ClientContactPerson contactPerson2 = new ClientContactPerson(client2, "Corina", "Volf", "responsabil " +
                 "mediu", "cvo***@borgwarner.ro", "0782*****");
-        ClientContactPerson contactPerson3 = new ClientContactPerson( client1, "George", "Brancus", "inginer",
+        ClientContactPerson contactPerson3 = new ClientContactPerson(client1, "George", "Brancus", "inginer",
                 "gbra***@panifcom.ro", "02365*****");
-        ClientContactPerson contactPerson4 = new ClientContactPerson( client4, "Valeriu", "Negoi", "inginer",
+        ClientContactPerson contactPerson4 = new ClientContactPerson(client4, "Valeriu", "Negoi", "inginer",
                 "vn***@borgw.ro", "0254*****");
         contactPersRepo.save(contactPerson1);
         contactPersRepo.save(contactPerson2);

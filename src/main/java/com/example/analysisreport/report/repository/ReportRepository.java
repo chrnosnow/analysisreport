@@ -1,7 +1,6 @@
 package com.example.analysisreport.report.repository;
 
 import com.example.analysisreport.report.entity.Report;
-import com.example.analysisreport.water_sample.entity.WaterSample;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;

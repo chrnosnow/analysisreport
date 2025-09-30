@@ -1,9 +1,9 @@
-package com.example.analysisreport.water_sample.controller;
+package com.example.analysisreport.samples.controller;
 
 import com.example.analysisreport.client.entity.Client;
 import com.example.analysisreport.client.repository.ClientRepository;
-import com.example.analysisreport.water_sample.entity.WaterSample;
-import com.example.analysisreport.water_sample.repository.WaterSampleRepository;
+import com.example.analysisreport.samples.entity.WaterSample;
+import com.example.analysisreport.samples.repository.WaterSampleRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -46,7 +46,7 @@ public class WaterSampleController {
 
     @GetMapping("/search")
     public List<WaterSample> searchByDateBetween(@RequestParam(name = "startDate") @DateTimeFormat(pattern = "dd.MM" +
-            ".yyyy") Date startDate,
+                                                         ".yyyy") Date startDate,
                                                  @RequestParam(name = "endDate") @DateTimeFormat(pattern = "dd.MM" +
                                                          ".yyyy") Date endDate) {
         List<WaterSample> result = null;
