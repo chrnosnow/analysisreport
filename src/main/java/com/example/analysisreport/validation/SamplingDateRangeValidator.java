@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * Usage:
  * Annotate the DTO class with @ValidDateRange to apply this validation.
  */
-public class SamplingDateRangeValidator implements ConstraintValidator<ValidDateRange, WaterSampleCreateDto> {
+public class SamplingDateRangeValidator implements ConstraintValidator<ValidDateRange, DateRangeProvider> {
     /**
      * This method contains the validation logic.
      * It checks if the receiving date is after or equal to the sampling date.
@@ -26,7 +26,7 @@ public class SamplingDateRangeValidator implements ConstraintValidator<ValidDate
      * @return true if the date range is valid, false otherwise.
      */
     @Override
-    public boolean isValid(WaterSampleCreateDto dto, ConstraintValidatorContext context) {
+    public boolean isValid(DateRangeProvider dto, ConstraintValidatorContext context) {
         LocalDateTime startDate = dto.getSamplingDateTime();
         LocalDateTime endDate = dto.getReceivingDateTime();
         if (startDate == null || endDate == null) {

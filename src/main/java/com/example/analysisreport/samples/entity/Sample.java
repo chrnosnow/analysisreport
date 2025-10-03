@@ -52,7 +52,7 @@ public abstract class Sample {
     private Contract contract;
 
     @Size(max = 500)
-    @Column(name = "sample_location_details", length = 500)
+    @Column(name = "location_details", length = 500)
     private String sampleLocationDetails;
 
     @NotNull

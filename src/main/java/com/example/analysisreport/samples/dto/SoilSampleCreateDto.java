@@ -1,5 +1,7 @@
 package com.example.analysisreport.samples.dto;
 
+import com.example.analysisreport.samples.entity.LandUse;
+import com.example.analysisreport.samples.entity.SoilTexture;
 import com.example.analysisreport.samples.entity.WaterSampleType;
 import com.example.analysisreport.validation.DateRangeProvider;
 import com.example.analysisreport.validation.ValidDateRange;
@@ -12,7 +14,7 @@ import java.time.LocalDateTime;
 // equivalent to @Getter, @Setter, @ToString, @EqualsAndHashCode, and @RequiredArgsConstructor
 @ValidDateRange(message = "Receiving date must be after or equal to the sampling date")
 // custom annotation to validate date range
-public class WaterSampleCreateDto implements DateRangeProvider {
+public class SoilSampleCreateDto implements DateRangeProvider {
     @NotBlank(message = "Sample code cannot be blank")
     private String sampleCode;
 
@@ -31,6 +33,8 @@ public class WaterSampleCreateDto implements DateRangeProvider {
     @NotNull(message = "Receiving date and time is required")
     private LocalDateTime receivingDateTime;
 
-    @NotNull(message = "Water sample type is required")
-    private WaterSampleType waterSampleType;
+    private Double sampleDepthCm;
+    private SoilTexture soilTexture;
+    private String color;
+    private LandUse landUse;
 }

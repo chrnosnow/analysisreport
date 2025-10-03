@@ -17,6 +17,12 @@ public interface SampleMapper {
     @Mapping(source = "type", target = "waterSampleType")
     WaterSampleResponseDto toDto(WaterSample entity);
 
+    @Mapping(source = "client.id", target = "clientId")
+    @Mapping(source = "client.name", target = "clientName")
+    @Mapping(source = "contract.id", target = "contractId")
+    @Mapping(source = "samplingDepthCentimeters", target = "sampleDepthCm")
+    SoilSampleResponseDto toDto(SoilSample entity);
+
 
     // ========== toEntity (DTO -> Entity) ==========
     // Responsible for translating a creation request into a new entity.
@@ -30,6 +36,13 @@ public interface SampleMapper {
     @Mapping(source = "waterSampleType", target = "type")
     WaterSample toEntity(WaterSampleCreateDto dto);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "client", ignore = true) // The service will handle setting this.
+    @Mapping(target = "contract", ignore = true) // will be set manually in the service
+    @Mapping(source = "sampleDepthCm", target = "samplingDepthCentimeters")
+    SoilSample toEntity(SoilSampleCreateDto dto);
 
     // ========== for Updates (DTO -> Existing Entity) ==========
     // This method is for PATCH/PUT operations.
