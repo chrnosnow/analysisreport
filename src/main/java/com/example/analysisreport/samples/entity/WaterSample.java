@@ -17,10 +17,10 @@ public class WaterSample extends Sample {
     // EnumType.STRING ensures that the enum is stored as a string in the database
     @Enumerated(EnumType.STRING)
     @Column(name = "water_sample_type", nullable = false)
-    private WaterSampleType waterSampleType;
+    private WaterSampleType type;
 
     @Override
     public String toString() {
-        return super.toString() + ", type: " + waterSampleType;
+        return super.toString() + ", type: " + type;
     }
 }

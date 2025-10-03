@@ -1,104 +1,65 @@
 package com.example.analysisreport.samples.controller;
 
-import com.example.analysisreport.client.entity.Client;
-import com.example.analysisreport.client.repository.ClientRepository;
-import com.example.analysisreport.samples.entity.WaterSample;
-import com.example.analysisreport.samples.repository.WaterSampleRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import org.springframework.format.annotation.DateTimeFormat;
+
+import com.example.analysisreport.samples.dto.WaterSampleCreateDto;
+import com.example.analysisreport.samples.dto.WaterSampleResponseDto;
+import com.example.analysisreport.samples.service.SampleService;
+import jakarta.validation.Valid;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
+
+/**
+ * REST controller for managing WaterSample entities.
+ * Provides endpoints for CRUD operations and specific queries related to water samples.
+ * This controller interacts with the SampleService to perform business logic.
+ */
 @RestController
 @RequestMapping("/api/v2/water-samples")
+@RequiredArgsConstructor
 public class WaterSampleController {
 
-    private WaterSampleRepository waterSampleRepository;
-    private ClientRepository clientRepository;
+    private final SampleService sampleService;
 
-    public WaterSampleController(WaterSampleRepository waterSampleRepository, ClientRepository clientRepository) {
-        this.waterSampleRepository = waterSampleRepository;
-        this.clientRepository = clientRepository;
+    /**
+     * Endpoint to create a new WaterSample.
+     * Validates the incoming request body and delegates the creation logic to the SampleService.
+     *
+     * @param createDto Data Transfer Object containing details for the new water sample.
+     * @return ResponseEntity containing the created WaterSampleResponseDto and HTTP status 201 CREATED.
+     */
+    @PostMapping
+    public ResponseEntity<WaterSampleResponseDto> createWaterSample(@Valid @RequestBody WaterSampleCreateDto createDto) {
+        WaterSampleResponseDto responseDto = sampleService.createWaterSample(createDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
+    /**
+     * Endpoint to retrieve all WaterSamples.
+     *
+     * @return ResponseEntity containing a list of WaterSampleResponseDto and HTTP status 200 OK.
+     */
     @GetMapping
-    public List<WaterSample> getAllSamples() {
-        return this.waterSampleRepository.findAll();
+    public ResponseEntity<List<WaterSampleResponseDto>> getAllWaterSamples() {
+        List<WaterSampleResponseDto> samples = sampleService.findAllWaterSamples();
+        return ResponseEntity.ok(samples);
     }
 
-    @GetMapping("/search/{clientId}")
-    public List<WaterSample> getByClientId(@PathVariable(value = "clientId") Long clientId) {
-        return waterSampleRepository.findByClientId(clientId);
-    }
-
-    @GetMapping("/search/{contractId}")
-    public List<WaterSample> getByContractId(@PathVariable(value = "contractId") Long contractId) {
-        return waterSampleRepository.findByContractId(contractId);
-    }
-
-    @GetMapping("/search")
-    public List<WaterSample> searchByDateBetween(@RequestParam(name = "startDate") @DateTimeFormat(pattern = "dd.MM" +
-                                                         ".yyyy") Date startDate,
-                                                 @RequestParam(name = "endDate") @DateTimeFormat(pattern = "dd.MM" +
-                                                         ".yyyy") Date endDate) {
-        List<WaterSample> result = null;
-        if (Objects.nonNull(startDate) && Objects.nonNull(endDate)) {
-            result = waterSampleRepository.findBySampleReceivingDateBetween(startDate, endDate);
-        }
-
-        return result;
-    }
-
-    @PostMapping("/add/{clientId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public WaterSample addSample(@PathVariable(value = "clientId") Long clientId,
-                                 @RequestBody WaterSample waterSample) {
-
-        Optional<Client> optionalClient = clientRepository.findById(clientId);
-        if (optionalClient.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id not found");
-        }
-
-        waterSample.setClientId(clientId);
-        return waterSampleRepository.save(waterSample);
-    }
-
-    @PutMapping("/update/{sampleId}")
-    //can partially update the sample details
-    //will update only the fields with non-null values
-    //will give error on null values
-    public WaterSample updateSample(@PathVariable(value = "sampleId") Long sampleId, @RequestBody String json) throws JsonProcessingException {
-        Optional<WaterSample> sampleOptional = waterSampleRepository.findById(sampleId);
-        if (sampleOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id not found");
-        }
-
-        WaterSample sampleToUpdate = sampleOptional.get();
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectReader reader = mapper.readerForUpdating(sampleToUpdate);
-        sampleToUpdate = reader.readValue(json);
-        waterSampleRepository.save(sampleToUpdate);
-        return sampleToUpdate;
-    }
-
-    @DeleteMapping("/delete/{sampleId}")
-    public WaterSample deleteBySampleId(@PathVariable(value = "sampleId") Long sampleId) {
-        Optional<WaterSample> sampleOptional = waterSampleRepository.findById(sampleId);
-        if (sampleOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id not found");
-        }
-
-        WaterSample sampleToDelete = sampleOptional.get();
-        waterSampleRepository.deleteById(sampleId);
-        return sampleToDelete;
+    /**
+     * Endpoint to retrieve a WaterSample by its ID.
+     *
+     * @param id the ID of the water sample to retrieve
+     * @return ResponseEntity containing the WaterSampleResponseDto and HTTP status 200 OK
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<WaterSampleResponseDto> getWaterSampleById(@PathVariable Long id) {
+        WaterSampleResponseDto responseDto = sampleService.findWaterSampleById(id);
+        return ResponseEntity.ok(responseDto);
     }
 
 }

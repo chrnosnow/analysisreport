@@ -1,9 +1,9 @@
 package com.example.analysisreport.contract.entity;
 
 import com.example.analysisreport.client.entity.Client;
-import com.example.analysisreport.contract.entity.ContractType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,24 +18,25 @@ public class Contract {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "CONTRACT_NUMBER")
-    private String number;
+    @Column(name = "code")
+    private String code;
 
-    @Column(name = "CONTRACT_DATE")
+    @Column(name = "date")
     @JsonFormat(pattern = "dd.MM.yyyy")
     private Date date;
 
     @ManyToOne
-    @JoinColumn(name = "CLIENT_ID", referencedColumnName = "id", updatable = false)
+    @JoinColumn(name = "client_id", referencedColumnName = "id", updatable = false)
     private Client client;
 
-    @Column(name = "CONTRACT_TYPE")
+    @Column(name = "type")
     private ContractType type;
 
-    public Contract(){}
+    public Contract() {
+    }
 
-    public Contract(String number, Date date, ContractType type){
-        this.number = number;
+    public Contract(String number, Date date, ContractType type) {
+        this.code = number;
         this.date = date;
         this.type = type;
     }
