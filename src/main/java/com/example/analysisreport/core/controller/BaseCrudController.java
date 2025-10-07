@@ -3,6 +3,8 @@ package com.example.analysisreport.core.controller;
 import com.example.analysisreport.core.dto.BaseResponseDto;
 import com.example.analysisreport.core.service.BaseCrudService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -72,19 +74,19 @@ public abstract class BaseCrudController<T, I, C, U, R extends BaseResponseDto<I
      * @return ResponseEntity containing a list of all resources and HTTP status 200 OK.
      */
     @GetMapping
-    public ResponseEntity<List<R>> getAll() {
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<Page<R>> getAll(Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(pageable));
     }
 
     /**
-     * Update an existing resource by its ID.
+     * Partially update an existing resource by its ID.
      * Validates the incoming request body and delegates the update logic to the service.
      *
      * @param id        The identifier of the resource to update.
      * @param updateDto Data Transfer Object containing updated details for the resource.
      * @return ResponseEntity containing the updated resource and HTTP status 200 OK.
      */
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<R> update(@PathVariable I id, @Valid @RequestBody U updateDto) {
         return ResponseEntity.ok(service.update(id, updateDto));
     }

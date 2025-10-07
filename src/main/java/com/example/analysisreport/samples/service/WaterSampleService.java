@@ -1,34 +1,26 @@
 package com.example.analysisreport.samples.service;
 
 import com.example.analysisreport.client.entity.Client;
-import com.example.analysisreport.client.repository.ClientRepository;
 import com.example.analysisreport.contract.entity.Contract;
-import com.example.analysisreport.contract.repository.ContractRepository;
-import com.example.analysisreport.core.service.BaseCrudService;
+import com.example.analysisreport.core.service.AbstractSampleService;
 import com.example.analysisreport.exception.DuplicateResourceException;
 import com.example.analysisreport.exception.InvalidRequestException;
 import com.example.analysisreport.exception.ResourceNotFound;
 import com.example.analysisreport.samples.dto.*;
-import com.example.analysisreport.samples.entity.Sample;
-import com.example.analysisreport.samples.entity.SoilSample;
 import com.example.analysisreport.samples.entity.WaterSample;
 import com.example.analysisreport.samples.mapper.SampleMapper;
 import com.example.analysisreport.samples.repository.SampleRepository;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-
 @Service
-@RequiredArgsConstructor
-public class WaterSampleService implements BaseCrudService<WaterSample, Long, WaterSampleCreateDto, WaterSampleUpdateDto, WaterSampleResponseDto> {
+public class WaterSampleService extends AbstractSampleService<WaterSample, WaterSampleCreateDto, WaterSampleUpdateDto, WaterSampleResponseDto> {
 
-    private final SampleRepository sampleRepository;
-    private final SampleMapper sampleMapper;
-    private final SampleValidationService validationService;
+    public WaterSampleService(SampleRepository sampleRepo, SampleMapper samplemapper, SampleValidationService sampleValidationService) {
+        super(sampleRepo, samplemapper, sampleValidationService);
+    }
 
     /**
      * Creates a new WaterSample based on the provided DTO.
@@ -59,11 +51,11 @@ public class WaterSampleService implements BaseCrudService<WaterSample, Long, Wa
      *
      * @return List of WaterSampleResponseDto representing all water samples.
      */
-    public List<WaterSampleResponseDto> findAll() {
-        List<WaterSample> samples = sampleRepository.findAllWaterSamples();
-        return samples.stream()
-                .map(sampleMapper::toDto)
-                .toList();
+    @Override
+    @Transactional(readOnly = true)
+    public Page<WaterSampleResponseDto> findAll(Pageable pageable) {
+        Page<WaterSample> entityPage = sampleRepository.findAllWaterSamples(pageable);
+        return entityPage.map(sampleMapper::toDto);
     }
 
     /**
@@ -73,19 +65,47 @@ public class WaterSampleService implements BaseCrudService<WaterSample, Long, Wa
      * @return WaterSampleResponseDto representing the water sample
      * @throws ResourceNotFound if the water sample with the given ID does not exist
      */
+    @Override
+    @Transactional(readOnly = true)
     public WaterSampleResponseDto findById(Long id) {
-        Optional<WaterSample> optionalWaterSample = sampleRepository.findWaterSampleById(id);
-        return optionalWaterSample.map(sampleMapper::toDto) // If the optional has a value, map it to a DTO.
-                .orElseThrow(() -> new ResourceNotFound("Water Sample not found with id: " + id)); // If not, throw an exception.
+        WaterSample waterSample = findWaterSampleEntityById(id);
+        return sampleMapper.toDto(waterSample);
     }
 
     @Override
+    @Transactional // ensures that the operation is atomic
     public WaterSampleResponseDto update(Long id, WaterSampleUpdateDto updateDto) {
-        return null;
+        
+        WaterSample existingSample = findWaterSampleEntityById(id);
+
+        // handle potential contract change
+        if (updateDto.getContractId() != null) {
+            Client client = existingSample.getClient();
+            Contract newContract = validationService.loadAndValidateContract(updateDto.getContractId(), client);
+            existingSample.setContract(newContract);
+        }
+
+        // apply updates from DTO to entity
+        sampleMapper.updateEntityFromDto(updateDto, existingSample);
+
+        WaterSample updatedSample = sampleRepository.save(existingSample);
+        return sampleMapper.toDto(updatedSample);
     }
 
     @Override
-    public void deleteById(Long id) {
+    protected String getResourceName() {
+        return "Water Sample";
+    }
 
+    /**
+     * Helper method to find a WaterSample entity by its ID or throw an exception if not found.
+     *
+     * @param id the ID of the water sample to find
+     * @return the found WaterSample entity
+     * @throws ResourceNotFound if the water sample with the given ID does not exist
+     */
+    private WaterSample findWaterSampleEntityById(Long id) {
+        return sampleRepository.findWaterSampleById(id)
+                .orElseThrow(() -> new ResourceNotFound(getResourceName() + " not found with id " + id));
     }
 }

@@ -13,6 +13,8 @@ import com.example.analysisreport.samples.mapper.SampleMapper;
 import com.example.analysisreport.samples.repository.SampleRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +28,6 @@ public class SoilSampleService implements BaseCrudService<SoilSample, Long, Soil
     private final SampleRepository sampleRepository;
     private final SampleMapper sampleMapper;
     private final SampleValidationService validationService;
-
-    /**
-     * Retrieves all sample summaries from the database.
-     *
-     * @return List of SampleSummaryDto representing summaries of all samples.
-     */
-    public List<SampleSummaryDto> getAllSampleSummaries() {
-        return sampleRepository.findAllSummaries();
-    }
 
     /**
      * Creates a new SoilSample based on the provided DTO.
@@ -64,11 +57,10 @@ public class SoilSampleService implements BaseCrudService<SoilSample, Long, Soil
      *
      * @return List of SoilSampleResponseDto representing all soil samples.
      */
-    public List<SoilSampleResponseDto> findAll() {
-        List<SoilSample> samples = sampleRepository.findAllSoilSamples();
-        return samples.stream()
-                .map(sampleMapper::toDto)
-                .toList();
+    @Override
+    public Page<SoilSampleResponseDto> findAll(Pageable pageable) {
+        Page<SoilSample> entityPage = sampleRepository.findAllSoilSamples(pageable);
+        return entityPage.map(sampleMapper::toDto);
     }
 
     @Override

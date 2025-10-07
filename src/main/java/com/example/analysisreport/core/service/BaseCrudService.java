@@ -1,6 +1,7 @@
 package com.example.analysisreport.core.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * A generic interface for basic CRUD (Create, Read, Update, Delete) operations.
@@ -16,7 +17,7 @@ public interface BaseCrudService<T, I, C, U, R> {
 
     R findById(I id);
 
-    List<R> findAll();
+    Page<R> findAll(Pageable pageable);
 
     R update(I id, U updateDto);
 

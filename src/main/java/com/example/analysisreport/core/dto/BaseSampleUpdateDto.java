@@ -18,7 +18,9 @@ import java.time.LocalDateTime;
 // equivalent to @Getter, @Setter, @ToString, @EqualsAndHashCode, and @RequiredArgsConstructor
 @ValidDateRange(message = "Receiving date must be after or equal to the sampling date")
 public abstract class BaseSampleUpdateDto implements DateRangeProvider {
-    // we don't allow updating id, sampleCode, clientId, contractId and createdAt to maintain data integrity
+    // we don't allow updating id, sampleCode, clientId, and createdAt to maintain data integrity
+
+    private Long contractId;
 
     @Size(max = 500, message = "Sample location details cannot exceed 500 characters")
     private String sampleLocationDetails;
@@ -27,4 +29,11 @@ public abstract class BaseSampleUpdateDto implements DateRangeProvider {
     private LocalDateTime samplingDateTime;
 
     private LocalDateTime receivingDateTime;
+
+    @Override
+    public String toString() {
+        return "sampleLocationDetails: " + sampleLocationDetails +
+                ", samplingDateTime: " + samplingDateTime +
+                ", receivingDateTime: " + receivingDateTime;
+    }
 }

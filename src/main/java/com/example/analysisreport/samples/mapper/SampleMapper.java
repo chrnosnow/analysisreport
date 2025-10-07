@@ -2,10 +2,10 @@ package com.example.analysisreport.samples.mapper;
 
 import com.example.analysisreport.samples.dto.*;
 import com.example.analysisreport.samples.entity.*;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface SampleMapper {
 
     // ========== toDto (Entity -> DTO) ==========
@@ -45,7 +45,24 @@ public interface SampleMapper {
     SoilSample toEntity(SoilSampleCreateDto dto);
 
     // ========== for Updates (DTO -> Existing Entity) ==========
-    // This method is for PATCH/PUT operations.
+    // Methods for PATCH/PUT operations.
 
-    // void updateSampleFromDto(SampleUpdateDto dto, @MappingTarget Sample entity);
+    /**
+     * Updates an existing WaterSample entity with values from a WaterSampleUpdateDto.
+     * Only non-null fields in the DTO will be used to update the entity.
+     *
+     * @param dto    The DTO containing updated values.
+     * @param entity The existing WaterSample entity to be updated.
+     */
+
+    @Mapping(source = "waterSampleType", target = "type")
+    @Mapping(target = "contract", ignore = true)
+    // contract changes are implemented in the service layer
+    void updateEntityFromDto(WaterSampleUpdateDto dto, @MappingTarget WaterSample entity);
+
+    @Mapping(source = "sampleDepthCm", target = "samplingDepthCentimeters")
+    @Mapping(target = "contract", ignore = true)
+        // contract changes are implemented in the service layer
+    void updateEntityFromDto(SoilSampleUpdateDto dto, @MappingTarget SoilSample entity);
+
 }

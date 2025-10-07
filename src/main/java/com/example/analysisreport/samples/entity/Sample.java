@@ -92,6 +92,6 @@ public abstract class Sample {
 
     @Override
     public String toString() {
-        return "id: " + id + "code: " + sampleCode;
+        return "id: " + id + ", code: " + sampleCode;
     }
 }

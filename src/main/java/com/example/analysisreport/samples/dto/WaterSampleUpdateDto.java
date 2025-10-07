@@ -17,4 +17,9 @@ import lombok.EqualsAndHashCode;
 public class WaterSampleUpdateDto extends BaseSampleUpdateDto {
 
     private WaterSampleType waterSampleType;
+
+    @Override
+    public String toString() {
+        return super.toString() + ", waterSampleType: " + waterSampleType;
+    }
 }
