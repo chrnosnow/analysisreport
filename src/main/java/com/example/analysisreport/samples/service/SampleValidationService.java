@@ -52,7 +52,7 @@ public class SampleValidationService {
      */
     protected Client loadClient(Long id) {
         return clientRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFound("Client not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFound("Client not found with id " + id));
     }
 
     /**

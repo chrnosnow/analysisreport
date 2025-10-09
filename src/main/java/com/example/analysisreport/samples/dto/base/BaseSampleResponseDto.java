@@ -1,6 +1,7 @@
 package com.example.analysisreport.samples.dto.base;
 
 import com.example.analysisreport.core.dto.BaseResponseDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -21,8 +22,13 @@ public abstract class BaseSampleResponseDto implements BaseResponseDto<Long> {
     private String clientName;
 
     private String sampleLocationDetails;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime samplingDateTime;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime receivingDateTime;
+    
     private LocalDateTime createdAt;
 
     // explicitly implement getId() from BaseResponseDto
