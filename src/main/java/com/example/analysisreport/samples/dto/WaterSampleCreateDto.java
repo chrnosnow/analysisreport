@@ -1,6 +1,6 @@
 package com.example.analysisreport.samples.dto;
 
-import com.example.analysisreport.core.dto.BaseSampleCreateDto;
+import com.example.analysisreport.samples.dto.base.BaseSampleCreateDto;
 import com.example.analysisreport.samples.entity.WaterSampleType;
 import jakarta.validation.constraints.*;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.example.analysisreport.samples.dto;
 
-import com.example.analysisreport.core.dto.BaseSampleResponseDto;
+import com.example.analysisreport.samples.dto.base.BaseSampleResponseDto;
 import com.example.analysisreport.samples.entity.LandUse;
 import com.example.analysisreport.samples.entity.SoilTexture;
 import lombok.Data;

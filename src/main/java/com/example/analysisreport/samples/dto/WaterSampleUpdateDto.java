@@ -1,6 +1,6 @@
 package com.example.analysisreport.samples.dto;
 
-import com.example.analysisreport.core.dto.BaseSampleUpdateDto;
+import com.example.analysisreport.samples.dto.base.BaseSampleUpdateDto;
 import com.example.analysisreport.samples.entity.WaterSampleType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

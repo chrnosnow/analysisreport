@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
 
 @SpringBootApplication
+// Same as @SpringBootConfiguration @EnableAutoConfiguration @ComponentScanScan
 @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
 // to use DTOs in paginated responses (enable stable page serialization)
 public class AnalysisReportApplication implements CommandLineRunner {

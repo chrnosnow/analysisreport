@@ -1,7 +1,7 @@
-package com.example.analysisreport.core.dto;
+package com.example.analysisreport.samples.dto.base;
 
-import com.example.analysisreport.validation.DateRangeProvider;
-import com.example.analysisreport.validation.ValidDateRange;
+import com.example.analysisreport.core.validation.DateRangeProvider;
+import com.example.analysisreport.core.validation.ValidDateRange;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.Data;

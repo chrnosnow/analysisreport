@@ -1,6 +1,5 @@
-package com.example.analysisreport.validation;
+package com.example.analysisreport.core.validation;
 
-import com.example.analysisreport.samples.dto.WaterSampleCreateDto;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

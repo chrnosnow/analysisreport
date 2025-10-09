@@ -1,4 +1,4 @@
-package com.example.analysisreport.validation;
+package com.example.analysisreport.core.validation;
 
 import java.time.LocalDateTime;
 

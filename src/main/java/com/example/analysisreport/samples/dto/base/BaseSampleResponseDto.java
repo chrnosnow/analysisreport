@@ -1,5 +1,6 @@
-package com.example.analysisreport.core.dto;
+package com.example.analysisreport.samples.dto.base;
 
+import com.example.analysisreport.core.dto.BaseResponseDto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
