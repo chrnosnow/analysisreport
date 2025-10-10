@@ -2,7 +2,9 @@ package com.example.analysisreport.samples.service;
 
 import com.example.analysisreport.client.entity.Client;
 import com.example.analysisreport.contract.entity.Contract;
+import com.example.analysisreport.core.service.AbstractSampleService;
 import com.example.analysisreport.core.service.BaseCrudService;
+import com.example.analysisreport.core.service.ValidationService;
 import com.example.analysisreport.exception.DuplicateResourceException;
 import com.example.analysisreport.exception.InvalidRequestException;
 import com.example.analysisreport.exception.ResourceNotFound;
@@ -18,16 +20,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-public class SoilSampleService implements BaseCrudService<SoilSample, Long, SoilSampleCreateDto, SoilSampleUpdateDto, SoilSampleResponseDto> {
+public class SoilSampleService extends AbstractSampleService<SoilSample, SoilSampleCreateDto, SoilSampleUpdateDto, SoilSampleResponseDto> {
 
-    private final SampleRepository sampleRepository;
-    private final SampleMapper sampleMapper;
-    private final SampleValidationService validationService;
+    public SoilSampleService(SampleRepository sampleRepository, SampleMapper sampleMapper, SampleValidationService sampleValidationService, ValidationService validationService) {
+        super(sampleRepository, sampleMapper, sampleValidationService, validationService);
+    }
 
     /**
      * Creates a new SoilSample based on the provided DTO.
@@ -40,14 +40,15 @@ public class SoilSampleService implements BaseCrudService<SoilSample, Long, Soil
      * @throws InvalidRequestException    if the contract does not belong to the specified client
      * @throws DuplicateResourceException if a sample with the given code already exists
      */
+    @Override
     @Transactional // ensures that the operation is atomic
-    public SoilSampleResponseDto create(@Valid SoilSampleCreateDto dto) {
+    public SoilSampleResponseDto create(SoilSampleCreateDto dto) {
         Client client = validationService.loadClient(dto.getClientId());
         Contract contract = validationService.loadAndValidateContract(dto.getContractId(), client);
         // map DTO to Entity
         SoilSample soilSampleEntity = sampleMapper.toEntity(dto);
         // persist entity to database
-        SoilSample persistedEntity = validationService.persistSample(soilSampleEntity, dto.getSampleCode(), client, contract);
+        SoilSample persistedEntity = sampleValidationService.persistSample(soilSampleEntity, dto.getSampleCode(), client, contract);
         // map Entity to Response DTO
         return sampleMapper.toDto(persistedEntity);
     }
@@ -58,6 +59,7 @@ public class SoilSampleService implements BaseCrudService<SoilSample, Long, Soil
      * @return List of SoilSampleResponseDto representing all soil samples.
      */
     @Override
+    @Transactional(readOnly = true)
     public Page<SoilSampleResponseDto> findAll(Pageable pageable) {
         Page<SoilSample> entityPage = sampleRepository.findAllSoilSamples(pageable);
         return entityPage.map(sampleMapper::toDto);
@@ -65,12 +67,21 @@ public class SoilSampleService implements BaseCrudService<SoilSample, Long, Soil
 
     @Override
     public SoilSampleResponseDto update(Long id, SoilSampleUpdateDto updateDto) {
-        return null;
-    }
+        SoilSample existingSample = findSoilSampleEntityById(id);
 
-    @Override
-    public void deleteById(Long id) {
+        // handle potential contract change
+        if (updateDto.getContractId() != null) {
+            Client client = existingSample.getClient();
+            Contract newContract = validationService.loadAndValidateContract(updateDto.getContractId(), client);
+            existingSample.setContract(newContract);
+        }
 
+        // apply other updates from DTO to entity
+        sampleMapper.updateEntityFromDto(updateDto, existingSample);
+
+        // save updated entity
+        SoilSample updatedSample = sampleRepository.saveAndFlush(existingSample);
+        return sampleMapper.toDto(updatedSample);
     }
 
     /**
@@ -80,10 +91,28 @@ public class SoilSampleService implements BaseCrudService<SoilSample, Long, Soil
      * @return SoilSampleResponseDto representing the soil sample
      * @throws ResourceNotFound if the soil sample with the given ID does not exist
      */
+    @Override
+    @Transactional
     public SoilSampleResponseDto findById(Long id) {
-        Optional<SoilSample> optionalSoilSample = sampleRepository.findSoilSampleById(id);
-        return optionalSoilSample.map(sampleMapper::toDto) // If the optional has a value, map it to a DTO.
-                .orElseThrow(() -> new ResourceNotFound("Soil Sample not found with id: " + id)); // If not, throw an exception.
+        SoilSample soilSample = findSoilSampleEntityById(id);
+        return sampleMapper.toDto(soilSample);
+    }
+
+    @Override
+    protected String getResourceName() {
+        return "SoilSample";
+    }
+
+    /**
+     * Helper method to find a SoilSample entity by its ID or throw an exception if not found.
+     *
+     * @param id the ID of the soil sample to find
+     * @return the found SoilSample entity
+     * @throws ResourceNotFound if the soil sample with the given ID does not exist
+     */
+    private SoilSample findSoilSampleEntityById(Long id) {
+        return sampleRepository.findSoilSampleById(id)
+                .orElseThrow(() -> new ResourceNotFound(getResourceName() + " not found with id " + id));
     }
 
 }

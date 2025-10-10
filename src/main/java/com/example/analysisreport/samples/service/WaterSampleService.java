@@ -3,6 +3,7 @@ package com.example.analysisreport.samples.service;
 import com.example.analysisreport.client.entity.Client;
 import com.example.analysisreport.contract.entity.Contract;
 import com.example.analysisreport.core.service.AbstractSampleService;
+import com.example.analysisreport.core.service.ValidationService;
 import com.example.analysisreport.exception.DuplicateResourceException;
 import com.example.analysisreport.exception.InvalidRequestException;
 import com.example.analysisreport.exception.ResourceNotFound;
@@ -18,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class WaterSampleService extends AbstractSampleService<WaterSample, WaterSampleCreateDto, WaterSampleUpdateDto, WaterSampleResponseDto> {
 
-    public WaterSampleService(SampleRepository sampleRepo, SampleMapper samplemapper, SampleValidationService sampleValidationService) {
-        super(sampleRepo, samplemapper, sampleValidationService);
+    public WaterSampleService(SampleRepository sampleRepo, SampleMapper samplemapper, SampleValidationService sampleValidationService, ValidationService validationService) {
+        super(sampleRepo, samplemapper, sampleValidationService, validationService);
     }
 
     /**
@@ -41,7 +42,7 @@ public class WaterSampleService extends AbstractSampleService<WaterSample, Water
         // map DTO to Entity
         WaterSample waterSampleEntity = sampleMapper.toEntity(dto);
         // persist the sample
-        WaterSample persistedEntity = validationService.persistSample(waterSampleEntity, dto.getSampleCode(), client, contract);
+        WaterSample persistedEntity = sampleValidationService.persistSample(waterSampleEntity, dto.getSampleCode(), client, contract);
         // map Entity to Response DTO
         return sampleMapper.toDto(persistedEntity);
     }
