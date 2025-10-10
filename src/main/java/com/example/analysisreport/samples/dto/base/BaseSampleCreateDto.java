@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 // custom annotation to validate date range
 public abstract class BaseSampleCreateDto implements DateRangeProvider {
 
-    @NotBlank(message = "Sample code cannot be blank")
+    @NotBlank(message = "Sample code cannot be blank when creating a sample")
     private String sampleCode;
 
     @NotNull(message = "Client ID is required")
@@ -33,7 +33,7 @@ public abstract class BaseSampleCreateDto implements DateRangeProvider {
     private String sampleLocationDetails;
 
     @NotNull(message = "Sampling date and time is required")
-    @PastOrPresent
+    @PastOrPresent(message = "Sampling date cannot be in the future")
     private LocalDateTime samplingDateTime;
 
     @NotNull(message = "Receiving date and time is required")

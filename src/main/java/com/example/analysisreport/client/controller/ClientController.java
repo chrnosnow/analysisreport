@@ -12,16 +12,16 @@ import java.util.Optional;
 @RestController
 @RequestMapping("api/v2/clients")
 public class ClientController {
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
 
     public ClientController(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
 
-    @GetMapping
-    public List<Client> getAllClients() {
-        return this.clientRepository.findAll();
-    }
+//    @GetMapping
+//    public List<Client> getAllClients() {
+//        return this.clientRepository.findAll();
+//    }
 
     @GetMapping("/ascending")
     public List<Client> getAllClientsInAscendingOrder() {
@@ -34,9 +34,9 @@ public class ClientController {
     }
 
     @GetMapping("/client/{id}")
-    public Client getClientById(@PathVariable("id") Long id){
+    public Client getClientById(@PathVariable("id") Long id) {
         Optional<Client> optionalClient = this.clientRepository.findById(id);
-        if(optionalClient.isEmpty()){
+        if (optionalClient.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No such client.");
         }
 
@@ -66,11 +66,11 @@ public class ClientController {
         Client client = optionalClient.get();
         String updatedName = updatedDetails.getName();
         String updatedPAddress = updatedDetails.getAddress();
-        if (updatedName!= null) {
+        if (updatedName != null) {
             client.setName(updatedName);
         }
 
-        if (updatedPAddress!= null) {
+        if (updatedPAddress != null) {
             client.setAddress(updatedPAddress);
         }
         return this.clientRepository.save(client);
@@ -79,7 +79,7 @@ public class ClientController {
     @DeleteMapping("client/{id}")
     public Client deleteClient(@PathVariable(value = "id") Long id) {
         Optional<Client> optionalClientToDelete = clientRepository.findById(id);
-        if(optionalClientToDelete.isEmpty()){
+        if (optionalClientToDelete.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found");
         }
         Client clientToDelete = optionalClientToDelete.get();

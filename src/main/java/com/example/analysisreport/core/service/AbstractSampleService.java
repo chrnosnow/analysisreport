@@ -11,12 +11,14 @@ public abstract class AbstractSampleService<T extends Sample, C, U, R> implement
 
     protected final SampleRepository sampleRepository;
     protected final SampleMapper sampleMapper;
-    protected final SampleValidationService validationService;
+    protected final SampleValidationService sampleValidationService;
+    protected final ValidationService validationService;
 
-    protected AbstractSampleService(SampleRepository sampleRepo, SampleMapper samplemapper, SampleValidationService sampleValidationService) {
+    protected AbstractSampleService(SampleRepository sampleRepo, SampleMapper samplemapper, SampleValidationService sampleValidationService, ValidationService validationService) {
         this.sampleRepository = sampleRepo;
         this.sampleMapper = samplemapper;
-        this.validationService = sampleValidationService;
+        this.sampleValidationService = sampleValidationService;
+        this.validationService = validationService;
     }
 
     /**

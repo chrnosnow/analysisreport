@@ -31,6 +31,18 @@ public class ValidationService {
     }
 
     /**
+     * Finds a Contract by its ID or throws an exception if not found.
+     *
+     * @param id the ID of the contract to fetch
+     * @return the Contract entity
+     * @throws ResourceNotFound if the contract with the given ID does not exist
+     */
+    public Contract loadContract(Long id) {
+        return contractRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFound("Contract not found with id " + id));
+    }
+
+    /**
      * Finds a Contract by its ID or throws a ResourceNotFound exception.
      * Also validates that the contract belongs to the specified client.
      *
@@ -45,7 +57,7 @@ public class ValidationService {
             return null;
         }
         Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new ResourceNotFound("Contract not found with id: " + contractId));
+                .orElseThrow(() -> new ResourceNotFound("Contract not found with id " + contractId));
 
         // check if contract's client matches the provided client
         if (!contract.getClient().getId().equals(client.getId())) {
@@ -53,5 +65,30 @@ public class ValidationService {
         }
 
         return contract;
+    }
+
+    /**
+     * Finds a Client by its ID or throws a ResourceNotFound exception.
+     * Also validates that the client owns the specified contract.
+     *
+     * @param clientId the ID of the client to fetch
+     * @param contract the Contract entity to validate ownership against
+     * @return the Client entity if found and valid; null if clientId is null
+     * @throws ResourceNotFound        if the client with the given ID does not exist
+     * @throws InvalidRequestException if the client does not own the specified contract
+     */
+    public Client loadAndValidateClient(Long clientId, Contract contract) {
+        if (clientId == null) {
+            return null;
+        }
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ResourceNotFound("Client not found with id " + clientId));
+
+        // check if contract's client matches the provided client
+        if (!contract.getClient().getId().equals(client.getId())) {
+            throw new InvalidRequestException("The provided client does not own the specified contract.");
+        }
+
+        return client;
     }
 }

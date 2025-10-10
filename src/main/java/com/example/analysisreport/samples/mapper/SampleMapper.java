@@ -48,7 +48,7 @@ public interface SampleMapper {
     @Mapping(source = "sampleDepthCm", target = "samplingDepthCentimeters")
     SoilSample toEntity(SoilSampleCreateDto dto);
 
-    
+
     // ========== for Updates (DTO -> Existing Entity) ==========
     // Methods for PATCH/PUT operations.
 
@@ -65,6 +65,8 @@ public interface SampleMapper {
     @Mapping(target = "createdAt", ignore = true)   // generated and should not be updated
     @Mapping(target = "updatedAt", ignore = true)
     // let @PreUpdate handle this
+    @Mapping(target = "client", ignore = true) // client should not be updated
+    @Mapping(target = "sampleCode", ignore = true) // sample code should not be updated
     @Mapping(target = "id", ignore = true)
     // telling MapStruct to ignore the id field, as it should not be updated
     // the id is identified as null in save() and thus tries to create a new entity instead of updating the existing one
@@ -74,6 +76,8 @@ public interface SampleMapper {
     @Mapping(target = "contract", ignore = true)
     @Mapping(target = "createdAt", ignore = true)   // generated and should not be updated
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "client", ignore = true) // client should not be updated
+    @Mapping(target = "sampleCode", ignore = true) // sample code should not be updated
     // let @PreUpdate handle this
     @Mapping(target = "id", ignore = true)
         // telling MapStruct to ignore the id field, as it should not be updated

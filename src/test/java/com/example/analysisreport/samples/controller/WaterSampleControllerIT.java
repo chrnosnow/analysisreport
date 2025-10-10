@@ -20,8 +20,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -37,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * The tests use the "test" profile, which should configure an in-memory database
  * (like H2) for isolated testing.
  */
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 // load the full Spring application context (i.e. AnalysisReportApplication.java) but with a mock web environment
 @AutoConfigureMockMvc // auto-configure MockMvc instance to simulate HTTP requests
@@ -67,7 +68,7 @@ public class WaterSampleControllerIT {
         Client savedClient = createAndSaveTestClient("Test Client", "test address");
 
         // create and save a test contract for the client
-        Contract savedContract = createAndSaveTestContract("1366P", new Date(), ContractType.CONTRACT, savedClient);
+        Contract savedContract = createAndSaveTestContract("1366P", LocalDate.now(), ContractType.CONTRACT, savedClient);
 
         WaterSampleCreateDto createDto = new WaterSampleCreateDto();
         createDto.setSampleCode("WS-001-251009");
@@ -111,7 +112,7 @@ public class WaterSampleControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.sampleCode").value("Sample code cannot be blank"));
+                .andExpect(jsonPath("$.sampleCode").value("Sample code cannot be blank when creating a sample"));
     }
 
     @Test
@@ -157,8 +158,7 @@ public class WaterSampleControllerIT {
     void givenWaterSampleExists_whenGetWaterSampleById_thenReturns200Ok() throws Exception {
         Client testClient = createAndSaveTestClient("Client A", "Address A");
 
-        WaterSample ws = new WaterSample();
-        ws.setSampleCode("WS-004-251009");
+        WaterSample ws = new WaterSample("WS-004-251009");
         ws.setClient(testClient);
         ws.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         ws.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
@@ -192,8 +192,7 @@ public class WaterSampleControllerIT {
     @Test
     void givenWaterSampleExists_whenPatchWaterSample_thenReturn200OkAndIsUpdated() throws Exception {
         Client client = createAndSaveTestClient("Client B", "Address B");
-        WaterSample originalSample = new WaterSample();
-        originalSample.setSampleCode("WS-005-251009");
+        WaterSample originalSample = new WaterSample("WS-005-251009");
         originalSample.setClient(client);
         originalSample.setSampleLocationDetails("Original Location"); // will be updated
         originalSample.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
@@ -223,8 +222,7 @@ public class WaterSampleControllerIT {
     @Test
     void whenPatchWaterSampleWithInvalidDateRange_thenReturns400BadRequest() throws Exception {
         Client client = createAndSaveTestClient("Client C", "Address C");
-        WaterSample originalSample = new WaterSample();
-        originalSample.setSampleCode("WS-006-251009");
+        WaterSample originalSample = new WaterSample("WS-006-251009");
         originalSample.setClient(client);
         originalSample.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         originalSample.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
@@ -263,11 +261,10 @@ public class WaterSampleControllerIT {
 
     // =========== Tests for DELETE /api/v2/water-samples/{id} ===========
     @Test
-    void givenWaterSampleExists_whenDeleteWaterSample_thenReturns204NoCOntentAndIsDeleted() throws Exception {
+    void givenWaterSampleExists_whenDeleteWaterSample_thenReturns204NoContentAndIsDeleted() throws Exception {
         Client client = createAndSaveTestClient("Test Client", "Test Address");
 
-        WaterSample sampleToDelete = new WaterSample();
-        sampleToDelete.setSampleCode("WS-007-251009");
+        WaterSample sampleToDelete = new WaterSample("WS-007-251009");
         sampleToDelete.setClient(client);
         sampleToDelete.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         sampleToDelete.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
@@ -296,8 +293,7 @@ public class WaterSampleControllerIT {
         // create and save 15 samples
         int numberOfSamples = 15;
         for (int i = 1; i <= numberOfSamples; i++) {
-            WaterSample sample = new WaterSample();
-            sample.setSampleCode("WS-00" + i + "-251009");
+            WaterSample sample = new WaterSample("WS-00" + i + "-251009");
             sample.setClient(client);
             sample.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
             sample.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
@@ -312,7 +308,7 @@ public class WaterSampleControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content.length()").value(10)) // first page should have 10 samples
-                .andExpect(jsonPath("$.page.totalElements").value(numberOfSamples + 1))
+                .andExpect(jsonPath("$.page.totalElements").value(numberOfSamples))
                 .andExpect(jsonPath("$.page.totalPages").value(2))
                 .andExpect(jsonPath("$.page.number").value(0)) // current page number
                 .andExpect(jsonPath("$.page.size").value(10)); // page size
@@ -322,15 +318,13 @@ public class WaterSampleControllerIT {
     void whenGetWaterSamplesWithSort_thenReturnsSortedResponse() throws Exception {
         Client client = createAndSaveTestClient("Test Client", "Test Address");
 
-        WaterSample sampleZ = new WaterSample();
-        sampleZ.setSampleCode("ZZZ-999");
+        WaterSample sampleZ = new WaterSample("ZZZ-999");
         sampleZ.setClient(client);
         sampleZ.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         sampleZ.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
         sampleZ.setType(WaterSampleType.SURFACE);
 
-        WaterSample sampleA = new WaterSample();
-        sampleA.setSampleCode("AAA-111");
+        WaterSample sampleA = new WaterSample("AAA-111");
         sampleA.setClient(client);
         sampleA.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         sampleA.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
@@ -346,7 +340,7 @@ public class WaterSampleControllerIT {
                         .param("sort", "sampleCode,asc"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content.length()").value(3))
+                .andExpect(jsonPath("$.content.length()").value(2))
                 // Assert that the first element in the sorted list is the one with sampleCode "AAA-111"
                 .andExpect(jsonPath("$.content[0].sampleCode").value("AAA-111"))
                 // You can also assert the second element for completeness
@@ -359,8 +353,10 @@ public class WaterSampleControllerIT {
         return clientRepository.save(client);
     }
 
-    private Contract createAndSaveTestContract(String contractCode, Date date, ContractType type, Client client) {
-        Contract contract = new Contract(contractCode, date, type);
+    private Contract createAndSaveTestContract(String contractCode, LocalDate date, ContractType type, Client client) {
+        Contract contract = new Contract(contractCode);
+        contract.setContractDate(date);
+        contract.setContractType(type);
         contract.setClient(client);
         return contractRepository.save(contract);
     }

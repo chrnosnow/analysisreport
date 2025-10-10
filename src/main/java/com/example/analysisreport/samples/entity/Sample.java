@@ -4,11 +4,9 @@ import com.example.analysisreport.client.entity.Client;
 import com.example.analysisreport.contract.entity.Contract;
 import com.example.analysisreport.core.entity.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NaturalId;
 
 import java.time.LocalDateTime;
 
@@ -29,7 +27,6 @@ import java.time.LocalDateTime;
 // table and specific attributes in derived tables, reducing data redundancy and improving data integrity.
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
-@Setter
 @NoArgsConstructor
 public abstract class Sample extends BaseEntity {
 
@@ -37,41 +34,38 @@ public abstract class Sample extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NaturalId // ensures that the sampleCode is unique and can be used as a natural identifier for the entity
-    @NotBlank
     @Column(name = "sample_code", nullable = false, unique = true)
     private String sampleCode;
 
-    @NotNull // ensures that the field cannot be null in the entity
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
     // foreign key column; nullable=false ensures in DB that every sample must be associated with a client
     private Client client;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id")
     private Contract contract;
 
-    @Size(max = 500)
+    @Setter
     @Column(name = "location_details", length = 500)
     private String sampleLocationDetails;
 
-    @NotNull
-    @PastOrPresent(message = "Sampling date cannot be in the future")
+    @Setter
     @Column(name = "sampling_date", nullable = false)
     private LocalDateTime samplingDateTime;
 
-    @NotNull
+    @Setter
     @Column(name = "receiving_date", nullable = false)
     private LocalDateTime receivingDateTime;
 
-    // Bean validation method to ensure receivingDateTime is after or equal to samplingDateTime
-    // ensures database integrity at the application level
-    @AssertTrue(message = "Receiving date must be after or equal to sampling date")
-    private boolean isReceivingDateValid() {
-        return samplingDateTime == null || receivingDateTime == null || !receivingDateTime.isBefore(samplingDateTime);
-    }
 
+    // constructor for all mandatory fields required to construct a valid entity for the first time
+    // used by the mapper to create a new Sample with its immutable fields
+    public Sample(String sampleCode) {
+        this.sampleCode = sampleCode;
+    }
 
     @Override
     public String toString() {

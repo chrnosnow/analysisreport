@@ -9,7 +9,8 @@ import java.util.List;
 @Repository
 public interface ClientRepository extends CrudRepository<Client, Long> {
 
-    List<Client> findAll();
+
     List<Client> findByOrderByNameAsc();
+
     List<Client> findAllByNameContainingIgnoreCase(String name);
 }

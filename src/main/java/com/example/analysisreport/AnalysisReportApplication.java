@@ -7,17 +7,11 @@ import com.example.analysisreport.client.repository.ClientRepository;
 import com.example.analysisreport.contract.entity.Contract;
 import com.example.analysisreport.contract.entity.ContractType;
 import com.example.analysisreport.contract.repository.ContractRepository;
-import com.example.analysisreport.quality_indicator.entity.AccreditedStatus;
-import com.example.analysisreport.quality_indicator.entity.QualityIndicator;
+
 import com.example.analysisreport.quality_indicator.repository.QualityIndicatorRepository;
-import com.example.analysisreport.report.entity.Report;
 import com.example.analysisreport.report.repository.ReportRepository;
-import com.example.analysisreport.results.entity.Results;
 import com.example.analysisreport.results.repository.ResultsRepository;
 import com.example.analysisreport.samples.dto.WaterSampleCreateDto;
-import com.example.analysisreport.samples.entity.Sample;
-import com.example.analysisreport.samples.entity.WaterSample;
-import com.example.analysisreport.samples.mapper.SampleMapper;
 import com.example.analysisreport.samples.repository.SampleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -26,6 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
 
@@ -80,22 +75,26 @@ public class AnalysisReportApplication implements CommandLineRunner {
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
 
+
+        // insert
         // Create and save contracts
-        Contract contract1 = new Contract("1366P", formatter.parse("06.01.2022"), ContractType.CONTRACT);
+        Contract contract1 = new Contract("1366P");
         contract1.setClient(client1);
+        contract1.setContractDate(LocalDate.of(2024, 8, 25));
+        contract1.setContractType(ContractType.CONTRACT);
         contract1 = contractRepository.save(contract1);
 
-        Contract contract2 = new Contract("6", formatter.parse("22.02.2022"), ContractType.ORDER);
+        Contract contract2 = new Contract("6");
         contract2.setClient(client2);
         contract2 = contractRepository.save(contract2);
 
-        Contract contract3 = new Contract("1245698-63", formatter.parse("28.02.2022"), ContractType.ORDER);
-        contract3.setClient(client3);
-        contract3 = contractRepository.save(contract3);
-
-        Contract contract4 = new Contract("1301GL", formatter.parse("17.01.2022"), ContractType.ORDER);
-        contract4.setClient(client4);
-        contract4 = contractRepository.save(contract4);
+//        Contract contract3 = new Contract("1245698-63", formatter.parse("28.02.2022"), ContractType.ORDER);
+//        contract3.setClient(client3);
+//        contract3 = contractRepository.save(contract3);
+//
+//        Contract contract4 = new Contract("1301GL", formatter.parse("17.01.2022"), ContractType.ORDER);
+//        contract4.setClient(client4);
+//        contract4 = contractRepository.save(contract4);
 
         // create water samples without setting IDs manually
         WaterSampleCreateDto dto1 = new WaterSampleCreateDto();
@@ -106,15 +105,12 @@ public class AnalysisReportApplication implements CommandLineRunner {
         dto1.setReceivingDateTime(formatter.parse("14.02.2022").toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime());
         dto1.setSampleLocationDetails("Statie de epurare Panifcom");
         dto1.setWaterSampleType(com.example.analysisreport.samples.entity.WaterSampleType.WASTEWATER);
-        WaterSample sampleEntity1 = new WaterSample();
-        sampleEntity1.setSampleCode(dto1.getSampleCode());
-        sampleEntity1.setClient(client1);
-        sampleEntity1.setContract(contract1);
-        sampleEntity1.setSamplingDateTime(dto1.getSamplingDateTime());
-        sampleEntity1.setReceivingDateTime(dto1.getReceivingDateTime());
-        sampleEntity1.setSampleLocationDetails(dto1.getSampleLocationDetails());
-        sampleEntity1.setType(dto1.getWaterSampleType());
-        sampleEntity1 = sampleRepository.save(sampleEntity1);
+//        WaterSample sampleEntity1 = new WaterSample();
+//        sampleEntity1.setClient(client1);
+//        sampleEntity1.setContract(contract1);
+//        sampleEntity1.setSampleLocationDetails(dto1.getSampleLocationDetails());
+//        sampleEntity1.setType(dto1.getWaterSampleType());
+//        sampleEntity1 = sampleRepository.save(sampleEntity1);
 
         // Create and save water samples using actual IDs
 //        WaterSample sample1 = new WaterSample();

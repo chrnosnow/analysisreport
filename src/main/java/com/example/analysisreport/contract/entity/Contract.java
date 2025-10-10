@@ -1,15 +1,13 @@
 package com.example.analysisreport.contract.entity;
 
 import com.example.analysisreport.client.entity.Client;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.example.analysisreport.core.entity.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(
@@ -19,36 +17,35 @@ import java.util.Date;
                 @Index(name = "idx_contract_code", columnList = "contract_code")
         },
         uniqueConstraints = {
-                @UniqueConstraint(name = "uq_contract_code_date", columnNames = {"contract_code", "contract_date"})
+                @UniqueConstraint(name = "uq_contract_code_client", columnNames = {"contract_code", "client_id"})
         }
 )
 @Getter
-@Setter
 @NoArgsConstructor
-public class Contract {
+public class Contract extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @NotBlank
+    @Setter
     @Column(name = "contract_code", nullable = false)
     private String contractCode;
 
+    @Setter
     @Column(name = "contract_date")
-    @JsonFormat(pattern = "dd.MM.yyyy")
-    private Date date;
+    private LocalDate contractDate;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", referencedColumnName = "id", updatable = false)
     private Client client;
 
+    @Setter
     @Column(name = "type")
-    private ContractType type;
+    private ContractType contractType;
 
-    public Contract(String number, Date date, ContractType type) {
-        this.contractCode = number;
-        this.date = date;
-        this.type = type;
+    // constructor for all mandatory fields required to construct a valid entity for the first time
+    public Contract(String contractCode) {
+        this.contractCode = contractCode;
     }
 }
