@@ -75,7 +75,7 @@ public class WaterSampleService extends AbstractSampleService<WaterSample, Water
     @Override
     @Transactional // ensures that the operation is atomic
     public WaterSampleResponseDto update(Long id, WaterSampleUpdateDto updateDto) {
-        
+
         WaterSample existingSample = findWaterSampleEntityById(id);
 
         // handle potential contract change
@@ -88,7 +88,7 @@ public class WaterSampleService extends AbstractSampleService<WaterSample, Water
         // apply updates from DTO to entity
         sampleMapper.updateEntityFromDto(updateDto, existingSample);
 
-        WaterSample updatedSample = sampleRepository.save(existingSample);
+        WaterSample updatedSample = sampleRepository.saveAndFlush(existingSample);
         return sampleMapper.toDto(updatedSample);
     }
 

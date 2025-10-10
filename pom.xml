@@ -26,6 +26,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!--        DELETE THIS WHEN USING ANOTHER DB, e.g. Postgres-->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

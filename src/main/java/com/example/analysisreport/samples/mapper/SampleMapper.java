@@ -15,12 +15,16 @@ public interface SampleMapper {
     @Mapping(source = "client.name", target = "clientName")
     @Mapping(source = "contract.id", target = "contractId")
     @Mapping(source = "type", target = "waterSampleType")
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "updatedAt", source = "updatedAt")
     WaterSampleResponseDto toDto(WaterSample entity);
 
     @Mapping(source = "client.id", target = "clientId")
     @Mapping(source = "client.name", target = "clientName")
     @Mapping(source = "contract.id", target = "contractId")
     @Mapping(source = "samplingDepthCentimeters", target = "sampleDepthCm")
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "updatedAt", source = "updatedAt")
     SoilSampleResponseDto toDto(SoilSample entity);
 
 
@@ -44,6 +48,7 @@ public interface SampleMapper {
     @Mapping(source = "sampleDepthCm", target = "samplingDepthCentimeters")
     SoilSample toEntity(SoilSampleCreateDto dto);
 
+    
     // ========== for Updates (DTO -> Existing Entity) ==========
     // Methods for PATCH/PUT operations.
 
@@ -57,12 +62,22 @@ public interface SampleMapper {
 
     @Mapping(source = "waterSampleType", target = "type")
     @Mapping(target = "contract", ignore = true)
-    // contract changes are implemented in the service layer
+    @Mapping(target = "createdAt", ignore = true)   // generated and should not be updated
+    @Mapping(target = "updatedAt", ignore = true)
+    // let @PreUpdate handle this
+    @Mapping(target = "id", ignore = true)
+    // telling MapStruct to ignore the id field, as it should not be updated
+    // the id is identified as null in save() and thus tries to create a new entity instead of updating the existing one
     void updateEntityFromDto(WaterSampleUpdateDto dto, @MappingTarget WaterSample entity);
 
     @Mapping(source = "sampleDepthCm", target = "samplingDepthCentimeters")
     @Mapping(target = "contract", ignore = true)
-        // contract changes are implemented in the service layer
+    @Mapping(target = "createdAt", ignore = true)   // generated and should not be updated
+    @Mapping(target = "updatedAt", ignore = true)
+    // let @PreUpdate handle this
+    @Mapping(target = "id", ignore = true)
+        // telling MapStruct to ignore the id field, as it should not be updated
+        // the id is identified as null in save() and thus tries to create a new entity instead of updating the existing one
     void updateEntityFromDto(SoilSampleUpdateDto dto, @MappingTarget SoilSample entity);
 
 }

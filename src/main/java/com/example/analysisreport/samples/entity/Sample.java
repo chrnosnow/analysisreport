@@ -2,6 +2,7 @@ package com.example.analysisreport.samples.entity;
 
 import com.example.analysisreport.client.entity.Client;
 import com.example.analysisreport.contract.entity.Contract;
+import com.example.analysisreport.core.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -30,7 +31,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public abstract class Sample {
+public abstract class Sample extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,26 +65,8 @@ public abstract class Sample {
     @Column(name = "receiving_date", nullable = false)
     private LocalDateTime receivingDateTime;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
-    // automatically set createdAt and updatedAt before persisting and updating
-    @PrePersist
-    protected void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
-        createdAt = now;
-        updatedAt = now;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
-
     // Bean validation method to ensure receivingDateTime is after or equal to samplingDateTime
+    // ensures database integrity at the application level
     @AssertTrue(message = "Receiving date must be after or equal to sampling date")
     private boolean isReceivingDateValid() {
         return samplingDateTime == null || receivingDateTime == null || !receivingDateTime.isBefore(samplingDateTime);

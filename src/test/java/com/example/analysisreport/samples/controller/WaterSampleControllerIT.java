@@ -7,7 +7,6 @@ import com.example.analysisreport.contract.entity.ContractType;
 import com.example.analysisreport.contract.repository.ContractRepository;
 import com.example.analysisreport.samples.dto.WaterSampleCreateDto;
 import com.example.analysisreport.samples.dto.WaterSampleUpdateDto;
-import com.example.analysisreport.samples.entity.Sample;
 import com.example.analysisreport.samples.entity.WaterSample;
 import com.example.analysisreport.samples.entity.WaterSampleType;
 import com.example.analysisreport.samples.repository.SampleRepository;
@@ -80,7 +79,7 @@ public class WaterSampleControllerIT {
         createDto.setSamplingDateTime(samplingDateTime);
         createDto.setReceivingDateTime(receivingDateTime);
         createDto.setWaterSampleType(WaterSampleType.TREATED_WASTEWATER);
-        
+
         mockMvc.perform(post("/api/v2/water-samples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createDto)))
@@ -93,7 +92,9 @@ public class WaterSampleControllerIT {
                 .andExpect(jsonPath("$.sampleLocationDetails").value("Discharge from wastewater treatment plant"))
                 .andExpect(jsonPath("$.samplingDateTime").value(samplingDateTime.toString()))
                 .andExpect(jsonPath("$.receivingDateTime").value(receivingDateTime.toString()))
-                .andExpect(jsonPath("$.waterSampleType").value("TREATED_WASTEWATER"));
+                .andExpect(jsonPath("$.waterSampleType").value("TREATED_WASTEWATER"))
+                .andExpect(jsonPath("$.createdAt").exists())
+                .andExpect(jsonPath("$.updatedAt").exists());
     }
 
     @Test
@@ -216,7 +217,7 @@ public class WaterSampleControllerIT {
                 .andExpect(jsonPath("$.sampleLocationDetails").value("Updated Location")) // updated
                 .andExpect(jsonPath("$.samplingDateTime").value("2025-10-09T09:09")) // unchanged
                 .andExpect(jsonPath("$.receivingDateTime").value("2025-10-09T10:22")) // unchanged
-                .andExpect(jsonPath("$.waterSampleType").value("GROUNDWATER")); // updated
+                .andExpect(jsonPath("$.waterSampleType").value("GROUNDWATER"));  // updated
     }
 
     @Test

@@ -1,7 +1,6 @@
 package com.example.analysisreport.samples.repository;
 
 import com.example.analysisreport.samples.dto.SampleSummaryDto;
-import com.example.analysisreport.samples.dto.SoilSampleResponseDto;
 import com.example.analysisreport.samples.entity.Sample;
 import com.example.analysisreport.samples.entity.SoilSample;
 import com.example.analysisreport.samples.entity.WaterSample;
@@ -54,7 +53,7 @@ public interface SampleRepository extends JpaRepository<Sample, Long> {
                      ELSE 'Unknown'
                  END,
                  s.client.name,
-                 s.contract.code,
+                 s.contract.contractCode,
                  s.receivingDateTime
              )
              FROM Sample s

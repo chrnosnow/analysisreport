@@ -28,8 +28,10 @@ public abstract class BaseSampleResponseDto implements BaseResponseDto<Long> {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime receivingDateTime;
-    
+
     private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     // explicitly implement getId() from BaseResponseDto
     @Override
