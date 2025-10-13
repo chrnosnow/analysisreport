@@ -6,11 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 // This class handles exceptions globally for all controllers in the application.
@@ -29,17 +28,26 @@ public class GlobalExceptionHandler {
      * @return a map containing field names and their corresponding error messages
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST) // return a 400 Bad Request status
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult()
-                .getAllErrors()
-                .forEach((error) -> {
+    public ResponseEntity<ApiErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
+
+        // Map each validation error to our custom ValidationError record
+        List<ValidationError> validationErrors = ex.getBindingResult().getAllErrors().stream()
+                .map(error -> {
                     String fieldName = ((FieldError) error).getField();
                     String errorMessage = error.getDefaultMessage();
-                    errors.put(fieldName, errorMessage);
-                });
-        return errors;
+                    return new ValidationError(fieldName, errorMessage);
+                })
+                .collect(Collectors.toList());
+
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "Validation failed for one or more fields", // A generic top-level message
+                request.getRequestURI(),
+                validationErrors // The structured list of errors
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**

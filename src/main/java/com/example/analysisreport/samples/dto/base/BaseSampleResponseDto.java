@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 public abstract class BaseSampleResponseDto implements BaseResponseDto<Long> {
     private Long id;
     private String sampleCode;
+    private Long matrixId;
+    private String matrixName;
     private Long contractId;
 
     // data for UI display

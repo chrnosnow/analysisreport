@@ -58,7 +58,7 @@ public class ContractService extends AbstractCrudService<Contract, Long, Contrac
     @Override
     @Transactional
     public ContractResponseDto update(Long id, ContractUpdateDto updateDto) {
-        Contract existingContract = findEntityById(id);
+        Contract existingContract = validationService.loadContract(id);
         // apply updates from DTO to entity
         contractMapper.updateEntityFromDto(updateDto, existingContract);
         // persist the updated contract

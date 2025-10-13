@@ -2,6 +2,7 @@ package com.example.analysisreport.samples.dto.base;
 
 import com.example.analysisreport.core.validation.DateRangeProvider;
 import com.example.analysisreport.core.validation.ValidDateRange;
+import com.example.analysisreport.matrix.entity.SampleMatrix;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -23,6 +24,9 @@ public abstract class BaseSampleCreateDto implements DateRangeProvider {
 
     @NotBlank(message = "Sample code cannot be blank when creating a sample")
     private String sampleCode;
+
+    @NotBlank(message = "Matrix cannot be blank when adding a sample")
+    private Long matrixId;
 
     @NotNull(message = "Client ID is required")
     private Long clientId;

@@ -8,7 +8,7 @@ import com.example.analysisreport.contract.repository.ContractRepository;
 import com.example.analysisreport.samples.dto.WaterSampleCreateDto;
 import com.example.analysisreport.samples.dto.WaterSampleUpdateDto;
 import com.example.analysisreport.samples.entity.WaterSample;
-import com.example.analysisreport.samples.entity.WaterSampleType;
+import com.example.analysisreport.samples.entity.WaterType;
 import com.example.analysisreport.samples.repository.SampleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -79,7 +79,7 @@ public class WaterSampleControllerIT {
         LocalDateTime receivingDateTime = LocalDateTime.of(2025, 10, 9, 10, 22); // October 9, 2025, 10:22 AM
         createDto.setSamplingDateTime(samplingDateTime);
         createDto.setReceivingDateTime(receivingDateTime);
-        createDto.setWaterSampleType(WaterSampleType.TREATED_WASTEWATER);
+        createDto.setWaterType(WaterType.TREATED_WASTEWATER);
 
         mockMvc.perform(post("/api/v2/water-samples")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,7 +93,7 @@ public class WaterSampleControllerIT {
                 .andExpect(jsonPath("$.sampleLocationDetails").value("Discharge from wastewater treatment plant"))
                 .andExpect(jsonPath("$.samplingDateTime").value(samplingDateTime.toString()))
                 .andExpect(jsonPath("$.receivingDateTime").value(receivingDateTime.toString()))
-                .andExpect(jsonPath("$.waterSampleType").value("TREATED_WASTEWATER"))
+                .andExpect(jsonPath("$.waterType").value("TREATED_WASTEWATER"))
                 .andExpect(jsonPath("$.createdAt").exists())
                 .andExpect(jsonPath("$.updatedAt").exists());
     }
@@ -106,7 +106,7 @@ public class WaterSampleControllerIT {
         invalidDto.setClientId(savedClient.getId());
         invalidDto.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         invalidDto.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
-        invalidDto.setWaterSampleType(WaterSampleType.DRINKING);
+        invalidDto.setWaterType(WaterType.DRINKING);
 
         mockMvc.perform(post("/api/v2/water-samples")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -123,7 +123,7 @@ public class WaterSampleControllerIT {
         invalidDto.setClientId(client.getId());
         invalidDto.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
         invalidDto.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9)); // earlier than sampling
-        invalidDto.setWaterSampleType(WaterSampleType.SURFACE);
+        invalidDto.setWaterType(WaterType.SURFACE);
 
         mockMvc.perform(post("/api/v2/water-samples")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -141,7 +141,7 @@ public class WaterSampleControllerIT {
         createDto.setClientId(nonExistentClientId); // non-existent client ID
         createDto.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         createDto.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
-        createDto.setWaterSampleType(WaterSampleType.GROUNDWATER);
+        createDto.setWaterType(WaterType.GROUNDWATER);
 
         mockMvc.perform(post("/api/v2/water-samples")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -162,7 +162,7 @@ public class WaterSampleControllerIT {
         ws.setClient(testClient);
         ws.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         ws.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
-        ws.setType(WaterSampleType.DRINKING);
+        ws.setType(WaterType.DRINKING);
 
         // save the entity using the repository to get a generated ID
         WaterSample savedSample = sampleRepository.save(ws);
@@ -175,7 +175,7 @@ public class WaterSampleControllerIT {
                 .andExpect(jsonPath("$.clientId").value(testClient.getId()))
                 .andExpect(jsonPath("$.samplingDateTime").value("2025-10-09T09:09"))
                 .andExpect(jsonPath("$.receivingDateTime").value("2025-10-09T10:22"))
-                .andExpect(jsonPath("$.waterSampleType").value("DRINKING"));
+                .andExpect(jsonPath("$.waterType").value("DRINKING"));
     }
 
     @Test
@@ -197,14 +197,14 @@ public class WaterSampleControllerIT {
         originalSample.setSampleLocationDetails("Original Location"); // will be updated
         originalSample.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         originalSample.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
-        originalSample.setType(WaterSampleType.SURFACE);    // will be updated
+        originalSample.setType(WaterType.SURFACE);    // will be updated
 
         WaterSample savedSample = sampleRepository.save(originalSample);
         Long sampleId = savedSample.getId();
 
         WaterSampleUpdateDto updateDto = new WaterSampleUpdateDto();
         updateDto.setSampleLocationDetails("Updated Location");
-        updateDto.setWaterSampleType(WaterSampleType.GROUNDWATER);
+        updateDto.setWaterType(WaterType.GROUNDWATER);
 
         mockMvc.perform(patch("/api/v2/water-samples/" + sampleId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -216,7 +216,7 @@ public class WaterSampleControllerIT {
                 .andExpect(jsonPath("$.sampleLocationDetails").value("Updated Location")) // updated
                 .andExpect(jsonPath("$.samplingDateTime").value("2025-10-09T09:09")) // unchanged
                 .andExpect(jsonPath("$.receivingDateTime").value("2025-10-09T10:22")) // unchanged
-                .andExpect(jsonPath("$.waterSampleType").value("GROUNDWATER"));  // updated
+                .andExpect(jsonPath("$.waterType").value("GROUNDWATER"));  // updated
     }
 
     @Test
@@ -226,7 +226,7 @@ public class WaterSampleControllerIT {
         originalSample.setClient(client);
         originalSample.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         originalSample.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
-        originalSample.setType(WaterSampleType.SURFACE);
+        originalSample.setType(WaterType.SURFACE);
 
         WaterSample savedSample = sampleRepository.save(originalSample);
         Long sampleId = savedSample.getId();
@@ -286,6 +286,7 @@ public class WaterSampleControllerIT {
                 .andExpect(status().isNotFound());
     }
 
+    // =========== Tests for GET /api/v2/water-samples with pagination and sorting ===========
     @Test
     void givenMultipleWaterSamplesExist_whenGetWaterSamples_thenReturnsPagedResponse() throws Exception {
         Client client = createAndSaveTestClient("Test Client", "Test Address");
@@ -297,7 +298,7 @@ public class WaterSampleControllerIT {
             sample.setClient(client);
             sample.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
             sample.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
-            sample.setType(WaterSampleType.SURFACE);
+            sample.setType(WaterType.SURFACE);
             sampleRepository.save(sample);
         }
 
@@ -322,13 +323,13 @@ public class WaterSampleControllerIT {
         sampleZ.setClient(client);
         sampleZ.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         sampleZ.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
-        sampleZ.setType(WaterSampleType.SURFACE);
+        sampleZ.setType(WaterType.SURFACE);
 
         WaterSample sampleA = new WaterSample("AAA-111");
         sampleA.setClient(client);
         sampleA.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         sampleA.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
-        sampleA.setType(WaterSampleType.SURFACE);
+        sampleA.setType(WaterType.SURFACE);
 
         sampleRepository.saveAll(List.of(sampleZ, sampleA));
 

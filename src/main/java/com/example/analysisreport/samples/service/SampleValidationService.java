@@ -3,6 +3,7 @@ package com.example.analysisreport.samples.service;
 import com.example.analysisreport.client.entity.Client;
 import com.example.analysisreport.contract.entity.Contract;
 import com.example.analysisreport.exception.DuplicateResourceException;
+import com.example.analysisreport.matrix.entity.SampleMatrix;
 import com.example.analysisreport.samples.dto.*;
 import com.example.analysisreport.samples.entity.Sample;
 import com.example.analysisreport.samples.repository.SampleRepository;

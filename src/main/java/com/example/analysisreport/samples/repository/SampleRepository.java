@@ -4,7 +4,7 @@ import com.example.analysisreport.samples.dto.SampleSummaryDto;
 import com.example.analysisreport.samples.entity.Sample;
 import com.example.analysisreport.samples.entity.SoilSample;
 import com.example.analysisreport.samples.entity.WaterSample;
-import com.example.analysisreport.samples.entity.WaterSampleType;
+import com.example.analysisreport.samples.entity.WaterType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,7 +32,7 @@ public interface SampleRepository extends JpaRepository<Sample, Long> {
     Optional<WaterSample> findWaterSampleById(Long id);
 
     @Query("SELECT ws FROM WaterSample ws WHERE ws.type = :type")
-    List<WaterSample> findWaterSamplesByType(WaterSampleType type);
+    List<WaterSample> findWaterSamplesByType(WaterType type);
 
     /**
      * Fetches a summary of all samples.
@@ -71,4 +71,5 @@ public interface SampleRepository extends JpaRepository<Sample, Long> {
 
     @Query("SELECT ss FROM SoilSample ss WHERE ss.id = :id")
     Optional<SoilSample> findSoilSampleById(Long id);
+
 }

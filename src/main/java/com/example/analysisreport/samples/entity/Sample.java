@@ -3,6 +3,7 @@ package com.example.analysisreport.samples.entity;
 import com.example.analysisreport.client.entity.Client;
 import com.example.analysisreport.contract.entity.Contract;
 import com.example.analysisreport.core.entity.BaseEntity;
+import com.example.analysisreport.matrix.entity.SampleMatrix;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,11 +61,15 @@ public abstract class Sample extends BaseEntity {
     @Column(name = "receiving_date", nullable = false)
     private LocalDateTime receivingDateTime;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "matrix_id", nullable = false)
+    protected SampleMatrix matrix;
 
     // constructor for all mandatory fields required to construct a valid entity for the first time
     // used by the mapper to create a new Sample with its immutable fields
-    public Sample(String sampleCode) {
+    public Sample(String sampleCode, SampleMatrix matrix) {
         this.sampleCode = sampleCode;
+        this.matrix = matrix;
     }
 
     @Override

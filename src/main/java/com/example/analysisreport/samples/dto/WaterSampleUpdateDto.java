@@ -1,7 +1,7 @@
 package com.example.analysisreport.samples.dto;
 
 import com.example.analysisreport.samples.dto.base.BaseSampleUpdateDto;
-import com.example.analysisreport.samples.entity.WaterSampleType;
+import com.example.analysisreport.samples.entity.WaterType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,10 +16,10 @@ import lombok.EqualsAndHashCode;
 // include fields from BaseSampleUpdateDto in equals and hashCode
 public class WaterSampleUpdateDto extends BaseSampleUpdateDto {
 
-    private WaterSampleType waterSampleType;
+    private WaterType waterType;
 
     @Override
     public String toString() {
-        return super.toString() + ", waterSampleType: " + waterSampleType;
+        return super.toString() + ", waterSampleType: " + waterType;
     }
 }

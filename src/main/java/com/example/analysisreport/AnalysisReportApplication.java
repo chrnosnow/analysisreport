@@ -240,5 +240,7 @@ public class AnalysisReportApplication implements CommandLineRunner {
         //        r5.setQualityIndicatorId(fe3.getId());
         //        r5.setResult("0.68");
         //        resultsRepository.save(r5);
+
+
     }
 }
