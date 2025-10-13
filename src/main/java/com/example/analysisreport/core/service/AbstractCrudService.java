@@ -1,5 +1,6 @@
 package com.example.analysisreport.core.service;
 
+import com.example.analysisreport.exception.ResourceNotFound;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,7 +47,7 @@ public abstract class AbstractCrudService<T, I, C, U, R> implements BaseCrudServ
     @Transactional
     public void deleteById(I id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException(getResourceName() + " not found with id: " + id);
+            throw new ResourceNotFound(getResourceName() + " not found with id: " + id);
         }
         repository.deleteById(id);
     }
@@ -73,7 +74,7 @@ public abstract class AbstractCrudService<T, I, C, U, R> implements BaseCrudServ
      */
     protected T findEntityById(I id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException(getResourceName() + " not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFound(getResourceName() + " not found with id: " + id));
     }
 
     /**

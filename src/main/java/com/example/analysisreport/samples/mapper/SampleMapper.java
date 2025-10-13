@@ -14,9 +14,11 @@ public interface SampleMapper {
     @Mapping(source = "client.id", target = "clientId")
     @Mapping(source = "client.name", target = "clientName")
     @Mapping(source = "contract.id", target = "contractId")
-    @Mapping(source = "type", target = "waterSampleType")
+    @Mapping(source = "type", target = "waterType")
     @Mapping(target = "createdAt", source = "createdAt")
     @Mapping(target = "updatedAt", source = "updatedAt")
+    @Mapping(source = "matrix.id", target = "matrixId")
+    @Mapping(source = "matrix.name", target = "matrixName")
     WaterSampleResponseDto toDto(WaterSample entity);
 
     @Mapping(source = "client.id", target = "clientId")
@@ -25,8 +27,10 @@ public interface SampleMapper {
     @Mapping(source = "samplingDepthCentimeters", target = "sampleDepthCm")
     @Mapping(target = "createdAt", source = "createdAt")
     @Mapping(target = "updatedAt", source = "updatedAt")
+    @Mapping(source = "matrix.id", target = "matrixId")
+    @Mapping(source = "matrix.name", target = "matrixName")
     SoilSampleResponseDto toDto(SoilSample entity);
-
+    
 
     // ========== toEntity (DTO -> Entity) ==========
     // Responsible for translating a creation request into a new entity.
@@ -37,7 +41,9 @@ public interface SampleMapper {
     @Mapping(target = "client", ignore = true) // The service will handle setting this.
     @Mapping(target = "contract", ignore = true)
     // will be set manually in the service
-    @Mapping(source = "waterSampleType", target = "type")
+    @Mapping(source = "waterType", target = "type")
+    @Mapping(target = "matrix", ignore = true)
+        // service sets this
     WaterSample toEntity(WaterSampleCreateDto dto);
 
     @Mapping(target = "id", ignore = true)
@@ -46,6 +52,8 @@ public interface SampleMapper {
     @Mapping(target = "client", ignore = true) // The service will handle setting this.
     @Mapping(target = "contract", ignore = true) // will be set manually in the service
     @Mapping(source = "sampleDepthCm", target = "samplingDepthCentimeters")
+    @Mapping(target = "matrix", ignore = true)
+        // service sets this
     SoilSample toEntity(SoilSampleCreateDto dto);
 
 
@@ -60,13 +68,14 @@ public interface SampleMapper {
      * @param entity The existing WaterSample entity to be updated.
      */
 
-    @Mapping(source = "waterSampleType", target = "type")
+    @Mapping(source = "waterType", target = "type")
     @Mapping(target = "contract", ignore = true)
     @Mapping(target = "createdAt", ignore = true)   // generated and should not be updated
     @Mapping(target = "updatedAt", ignore = true)
     // let @PreUpdate handle this
     @Mapping(target = "client", ignore = true) // client should not be updated
     @Mapping(target = "sampleCode", ignore = true) // sample code should not be updated
+    @Mapping(target = "matrix", ignore = true) // matrix should not be updated
     @Mapping(target = "id", ignore = true)
     // telling MapStruct to ignore the id field, as it should not be updated
     // the id is identified as null in save() and thus tries to create a new entity instead of updating the existing one
@@ -75,10 +84,10 @@ public interface SampleMapper {
     @Mapping(source = "sampleDepthCm", target = "samplingDepthCentimeters")
     @Mapping(target = "contract", ignore = true)
     @Mapping(target = "createdAt", ignore = true)   // generated and should not be updated
-    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)  // let @PreUpdate handle this
     @Mapping(target = "client", ignore = true) // client should not be updated
     @Mapping(target = "sampleCode", ignore = true) // sample code should not be updated
-    // let @PreUpdate handle this
+    @Mapping(target = "matrix", ignore = true) // matrix should not be updated
     @Mapping(target = "id", ignore = true)
         // telling MapStruct to ignore the id field, as it should not be updated
         // the id is identified as null in save() and thus tries to create a new entity instead of updating the existing one

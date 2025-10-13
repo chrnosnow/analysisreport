@@ -67,28 +67,4 @@ public class ValidationService {
         return contract;
     }
 
-    /**
-     * Finds a Client by its ID or throws a ResourceNotFound exception.
-     * Also validates that the client owns the specified contract.
-     *
-     * @param clientId the ID of the client to fetch
-     * @param contract the Contract entity to validate ownership against
-     * @return the Client entity if found and valid; null if clientId is null
-     * @throws ResourceNotFound        if the client with the given ID does not exist
-     * @throws InvalidRequestException if the client does not own the specified contract
-     */
-    public Client loadAndValidateClient(Long clientId, Contract contract) {
-        if (clientId == null) {
-            return null;
-        }
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResourceNotFound("Client not found with id " + clientId));
-
-        // check if contract's client matches the provided client
-        if (!contract.getClient().getId().equals(client.getId())) {
-            throw new InvalidRequestException("The provided client does not own the specified contract.");
-        }
-
-        return client;
-    }
 }

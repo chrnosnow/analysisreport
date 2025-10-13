@@ -1,7 +1,7 @@
 package com.example.analysisreport.samples.dto;
 
 import com.example.analysisreport.samples.dto.base.BaseSampleCreateDto;
-import com.example.analysisreport.samples.entity.WaterSampleType;
+import com.example.analysisreport.samples.entity.WaterType;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,5 +14,5 @@ import lombok.EqualsAndHashCode;
 public class WaterSampleCreateDto extends BaseSampleCreateDto {
 
     @NotNull(message = "Water sample type is required")
-    private WaterSampleType waterSampleType;
+    private WaterType waterType;
 }

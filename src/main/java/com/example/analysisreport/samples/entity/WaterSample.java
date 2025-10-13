@@ -1,5 +1,6 @@
 package com.example.analysisreport.samples.entity;
 
+import com.example.analysisreport.matrix.entity.SampleMatrix;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,10 +18,10 @@ public class WaterSample extends Sample {
     // EnumType.STRING ensures that the enum is stored as a string in the database
     @Enumerated(EnumType.STRING)
     @Column(name = "water_sample_type")
-    private WaterSampleType type;
+    private WaterType type;
 
-    public WaterSample(String sampleCode) {
-        super(sampleCode);
+    public WaterSample(String sampleCode, SampleMatrix matrix) {
+        super(sampleCode, matrix);
     }
 
     @Override
