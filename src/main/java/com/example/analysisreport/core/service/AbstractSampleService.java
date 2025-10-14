@@ -1,10 +1,10 @@
 package com.example.analysisreport.core.service;
 
 import com.example.analysisreport.exception.ResourceNotFound;
-import com.example.analysisreport.samples.entity.Sample;
-import com.example.analysisreport.samples.mapper.SampleMapper;
-import com.example.analysisreport.samples.repository.SampleRepository;
-import com.example.analysisreport.samples.service.SampleValidationService;
+import com.example.analysisreport.sample.entity.Sample;
+import com.example.analysisreport.sample.mapper.SampleMapper;
+import com.example.analysisreport.sample.repository.SampleRepository;
+import com.example.analysisreport.sample.service.SampleValidationService;
 import org.springframework.transaction.annotation.Transactional;
 
 public abstract class AbstractSampleService<T extends Sample, C, U, R> implements BaseCrudService<T, Long, C, U, R> {

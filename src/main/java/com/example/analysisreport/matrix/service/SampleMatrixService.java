@@ -9,10 +9,6 @@ import com.example.analysisreport.matrix.dto.SampleMatrixUpdateDto;
 import com.example.analysisreport.matrix.entity.SampleMatrix;
 import com.example.analysisreport.matrix.mapper.SampleMatrixMapper;
 import com.example.analysisreport.matrix.repository.SampleMatrixRepository;
-import com.example.analysisreport.samples.dto.WaterSampleResponseDto;
-import com.example.analysisreport.samples.entity.WaterSample;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,26 +1,18 @@
 package com.example.analysisreport;
 
-import com.example.analysisreport.client.entity.Client;
-import com.example.analysisreport.contact_person.entity.ClientContactPerson;
 import com.example.analysisreport.contact_person.repository.ClientContactPersonRepository;
 import com.example.analysisreport.client.repository.ClientRepository;
-import com.example.analysisreport.contract.entity.Contract;
-import com.example.analysisreport.contract.entity.ContractType;
 import com.example.analysisreport.contract.repository.ContractRepository;
 
-import com.example.analysisreport.quality_indicator.repository.QualityIndicatorRepository;
+import com.example.analysisreport.parameter.repository.QualityIndicatorRepository;
 import com.example.analysisreport.report.repository.ReportRepository;
-import com.example.analysisreport.results.repository.ResultsRepository;
-import com.example.analysisreport.samples.dto.WaterSampleCreateDto;
-import com.example.analysisreport.samples.repository.SampleRepository;
+import com.example.analysisreport.result.repository.ResultsRepository;
+import com.example.analysisreport.sample.repository.SampleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
-
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
 

@@ -1,6 +1,6 @@
 package com.example.analysisreport.report.entity;
 
-import com.example.analysisreport.samples.entity.WaterSample;
+import com.example.analysisreport.sample.entity.WaterSample;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;

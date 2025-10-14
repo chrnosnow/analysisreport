@@ -1,0 +1,25 @@
+package com.example.analysisreport.sample.dto;
+
+import com.example.analysisreport.sample.dto.base.BaseSampleUpdateDto;
+import com.example.analysisreport.sample.entity.WaterType;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * DTO for updating an existing Water Sample.
+ * All fields are optional to allow partial updates.
+ * The backend service will only update the fields that are not null in this DTO
+ */
+@Data
+// equivalent to @Getter, @Setter, @ToString, @EqualsAndHashCode, and @RequiredArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+// include fields from BaseSampleUpdateDto in equals and hashCode
+public class WaterSampleUpdateDto extends BaseSampleUpdateDto {
+
+    private WaterType waterType;
+
+    @Override
+    public String toString() {
+        return super.toString() + ", waterSampleType: " + waterType;
+    }
+}
