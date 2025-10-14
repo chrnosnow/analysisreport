@@ -5,6 +5,8 @@ import com.example.analysisreport.client.repository.ClientRepository;
 import com.example.analysisreport.contract.entity.Contract;
 import com.example.analysisreport.contract.entity.ContractType;
 import com.example.analysisreport.contract.repository.ContractRepository;
+import com.example.analysisreport.matrix.entity.SampleMatrix;
+import com.example.analysisreport.matrix.repository.SampleMatrixRepository;
 import com.example.analysisreport.samples.dto.WaterSampleCreateDto;
 import com.example.analysisreport.samples.dto.WaterSampleUpdateDto;
 import com.example.analysisreport.samples.entity.WaterSample;
@@ -61,6 +63,9 @@ public class WaterSampleControllerIT {
     @Autowired
     private SampleRepository sampleRepository;
 
+    @Autowired
+    private SampleMatrixRepository matrixRepository;
+
     // =========== Tests for POST /api/v2/water-samples ===========
     @Test
     void whenPostValidWaterSample_thenReturns201Created() throws Exception {
@@ -70,8 +75,13 @@ public class WaterSampleControllerIT {
         // create and save a test contract for the client
         Contract savedContract = createAndSaveTestContract("1366P", LocalDate.now(), ContractType.CONTRACT, savedClient);
 
+        // create and save a test sample matrix
+        SampleMatrix savedMatrix = createAndSaveTestMatrix("Test Water");
+        System.out.println("Saved Matrix ID: " + savedMatrix.getId());
+
         WaterSampleCreateDto createDto = new WaterSampleCreateDto();
         createDto.setSampleCode("WS-001-251009");
+        createDto.setMatrixId(savedMatrix.getId());
         createDto.setClientId(savedClient.getId());
         createDto.setContractId(savedContract.getId());
         createDto.setSampleLocationDetails("Discharge from wastewater treatment plant");
@@ -88,6 +98,8 @@ public class WaterSampleControllerIT {
                 .andExpect(header().exists("Location"))
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.sampleCode").value("WS-001-251009"))
+                .andExpect(jsonPath("$.matrixId").value(savedMatrix.getId()))
+                .andExpect(jsonPath("$.matrixName").value("Test Water"))
                 .andExpect(jsonPath("$.clientId").value(savedClient.getId()))
                 .andExpect(jsonPath("$.contractId").value(savedContract.getId()))
                 .andExpect(jsonPath("$.sampleLocationDetails").value("Discharge from wastewater treatment plant"))
@@ -101,9 +113,11 @@ public class WaterSampleControllerIT {
     @Test
     void whenPostWaterSampleWithMissingSampleCode_thenReturns400BadRequest() throws Exception {
         Client savedClient = createAndSaveTestClient("Test Client", "test address");
+        SampleMatrix savedMatrix = createAndSaveTestMatrix("Test Water");
 
         WaterSampleCreateDto invalidDto = new WaterSampleCreateDto();
         invalidDto.setClientId(savedClient.getId());
+        invalidDto.setMatrixId(savedMatrix.getId());
         invalidDto.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         invalidDto.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
         invalidDto.setWaterType(WaterType.DRINKING);
@@ -112,14 +126,16 @@ public class WaterSampleControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.sampleCode").value("Sample code cannot be blank when creating a sample"));
+                .andExpect(jsonPath("$.errors[0].field").value("sampleCode"));
     }
 
     @Test
     void whenPostWaterSampleWithInvalidDateRange_thenReturns400BadRequest() throws Exception {
         Client client = createAndSaveTestClient("Client", "Address A");
+        SampleMatrix matrix = createAndSaveTestMatrix("Test Water");
         WaterSampleCreateDto invalidDto = new WaterSampleCreateDto();
         invalidDto.setSampleCode("WS-002-251009");
+        invalidDto.setMatrixId(matrix.getId());
         invalidDto.setClientId(client.getId());
         invalidDto.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
         invalidDto.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9)); // earlier than sampling
@@ -129,7 +145,7 @@ public class WaterSampleControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.receivingDateTime").value("Receiving date must be after or equal to the sampling date"));
+                .andExpect(jsonPath("$.errors[0].field").value("receivingDateTime"));
     }
 
     @Test
@@ -138,6 +154,8 @@ public class WaterSampleControllerIT {
         createDto.setSampleCode("WS-003-251009");
 
         long nonExistentClientId = 999L;
+        SampleMatrix savedMatrix = createAndSaveTestMatrix("Test Water");
+        createDto.setMatrixId(savedMatrix.getId());
         createDto.setClientId(nonExistentClientId); // non-existent client ID
         createDto.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         createDto.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
@@ -157,8 +175,8 @@ public class WaterSampleControllerIT {
     @Test
     void givenWaterSampleExists_whenGetWaterSampleById_thenReturns200Ok() throws Exception {
         Client testClient = createAndSaveTestClient("Client A", "Address A");
-
-        WaterSample ws = new WaterSample("WS-004-251009");
+        SampleMatrix testMatrix = createAndSaveTestMatrix("Test Water");
+        WaterSample ws = new WaterSample("WS-004-251009", testMatrix);
         ws.setClient(testClient);
         ws.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         ws.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
@@ -172,6 +190,7 @@ public class WaterSampleControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(sampleId))
                 .andExpect(jsonPath("$.sampleCode").value("WS-004-251009"))
+                .andExpect(jsonPath("$.matrixName").value("Test Water"))
                 .andExpect(jsonPath("$.clientId").value(testClient.getId()))
                 .andExpect(jsonPath("$.samplingDateTime").value("2025-10-09T09:09"))
                 .andExpect(jsonPath("$.receivingDateTime").value("2025-10-09T10:22"))
@@ -192,7 +211,8 @@ public class WaterSampleControllerIT {
     @Test
     void givenWaterSampleExists_whenPatchWaterSample_thenReturn200OkAndIsUpdated() throws Exception {
         Client client = createAndSaveTestClient("Client B", "Address B");
-        WaterSample originalSample = new WaterSample("WS-005-251009");
+        SampleMatrix matrix = createAndSaveTestMatrix("Test Water");
+        WaterSample originalSample = new WaterSample("WS-005-251009", matrix);
         originalSample.setClient(client);
         originalSample.setSampleLocationDetails("Original Location"); // will be updated
         originalSample.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
@@ -212,6 +232,7 @@ public class WaterSampleControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(sampleId))
                 .andExpect(jsonPath("$.sampleCode").value("WS-005-251009")) // unchanged
+                .andExpect(jsonPath("$.matrixName").value("Test Water")) // unchanged
                 .andExpect(jsonPath("$.clientId").value(client.getId())) // unchanged
                 .andExpect(jsonPath("$.sampleLocationDetails").value("Updated Location")) // updated
                 .andExpect(jsonPath("$.samplingDateTime").value("2025-10-09T09:09")) // unchanged
@@ -222,7 +243,8 @@ public class WaterSampleControllerIT {
     @Test
     void whenPatchWaterSampleWithInvalidDateRange_thenReturns400BadRequest() throws Exception {
         Client client = createAndSaveTestClient("Client C", "Address C");
-        WaterSample originalSample = new WaterSample("WS-006-251009");
+        SampleMatrix matrix = createAndSaveTestMatrix("Test Water");
+        WaterSample originalSample = new WaterSample("WS-006-251009", matrix);
         originalSample.setClient(client);
         originalSample.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         originalSample.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
@@ -239,7 +261,7 @@ public class WaterSampleControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidUpdateDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.receivingDateTime").value("Receiving date must be after or equal to the sampling date"));
+                .andExpect(jsonPath("$.errors[0].field").value("receivingDateTime"));
     }
 
     @Test
@@ -263,8 +285,8 @@ public class WaterSampleControllerIT {
     @Test
     void givenWaterSampleExists_whenDeleteWaterSample_thenReturns204NoContentAndIsDeleted() throws Exception {
         Client client = createAndSaveTestClient("Test Client", "Test Address");
-
-        WaterSample sampleToDelete = new WaterSample("WS-007-251009");
+        SampleMatrix matrix = createAndSaveTestMatrix("Test Water");
+        WaterSample sampleToDelete = new WaterSample("WS-007-251009", matrix);
         sampleToDelete.setClient(client);
         sampleToDelete.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         sampleToDelete.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
@@ -294,7 +316,8 @@ public class WaterSampleControllerIT {
         // create and save 15 samples
         int numberOfSamples = 15;
         for (int i = 1; i <= numberOfSamples; i++) {
-            WaterSample sample = new WaterSample("WS-00" + i + "-251009");
+            SampleMatrix matrix = createAndSaveTestMatrix("Matrix " + i);
+            WaterSample sample = new WaterSample("WS-00" + i + "-251009", matrix);
             sample.setClient(client);
             sample.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
             sample.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
@@ -318,14 +341,14 @@ public class WaterSampleControllerIT {
     @Test
     void whenGetWaterSamplesWithSort_thenReturnsSortedResponse() throws Exception {
         Client client = createAndSaveTestClient("Test Client", "Test Address");
-
-        WaterSample sampleZ = new WaterSample("ZZZ-999");
+        SampleMatrix matrix = createAndSaveTestMatrix("Test Water");
+        WaterSample sampleZ = new WaterSample("ZZZ-999", matrix);
         sampleZ.setClient(client);
         sampleZ.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         sampleZ.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
         sampleZ.setType(WaterType.SURFACE);
 
-        WaterSample sampleA = new WaterSample("AAA-111");
+        WaterSample sampleA = new WaterSample("AAA-111", matrix);
         sampleA.setClient(client);
         sampleA.setSamplingDateTime(LocalDateTime.of(2025, 10, 9, 9, 9));
         sampleA.setReceivingDateTime(LocalDateTime.of(2025, 10, 9, 10, 22));
@@ -333,7 +356,6 @@ public class WaterSampleControllerIT {
 
         sampleRepository.saveAll(List.of(sampleZ, sampleA));
 
-        // keep in mind there is already one sample in the DB from the main class setup
 //        Sample sample = sampleRepository.findAll().get(0);
 //        System.out.println(sample);
         mockMvc.perform(get("/api/v2/water-samples")
@@ -360,5 +382,11 @@ public class WaterSampleControllerIT {
         contract.setContractType(type);
         contract.setClient(client);
         return contractRepository.save(contract);
+    }
+
+    private SampleMatrix createAndSaveTestMatrix(String name) {
+        SampleMatrix matrix = new SampleMatrix();
+        matrix.setName(name);
+        return matrixRepository.save(matrix);
     }
 }

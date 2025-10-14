@@ -6,16 +6,20 @@ import com.example.analysisreport.contract.entity.Contract;
 import com.example.analysisreport.contract.repository.ContractRepository;
 import com.example.analysisreport.exception.InvalidRequestException;
 import com.example.analysisreport.exception.ResourceNotFound;
+import com.example.analysisreport.matrix.entity.SampleMatrix;
+import com.example.analysisreport.matrix.repository.SampleMatrixRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ValidationService {
     private final ClientRepository clientRepository;
     private final ContractRepository contractRepository;
+    private final SampleMatrixRepository matrixRepository;
 
-    public ValidationService(ClientRepository clientRepository, ContractRepository contractRepository) {
+    public ValidationService(ClientRepository clientRepository, ContractRepository contractRepository, SampleMatrixRepository matrixRepository) {
         this.clientRepository = clientRepository;
         this.contractRepository = contractRepository;
+        this.matrixRepository = matrixRepository;
     }
 
     /**
@@ -65,6 +69,11 @@ public class ValidationService {
         }
 
         return contract;
+    }
+
+    public SampleMatrix loadSampleMatrix(Long id) {
+        return matrixRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFound("Sample Matrix not found with id " + id));
     }
 
 }

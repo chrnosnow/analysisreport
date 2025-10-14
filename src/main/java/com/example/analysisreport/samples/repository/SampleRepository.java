@@ -46,12 +46,7 @@ public interface SampleRepository extends JpaRepository<Sample, Long> {
              SELECT new com.example.analysisreport.samples.dto.SampleSummaryDto(
                  s.id,
                  s.sampleCode,
-                 CASE TYPE(s)
-                     WHEN WaterSample THEN 'Water'
-                     WHEN SoilSample THEN 'Soil'
-                     WHEN AirSample THEN 'Air'
-                     ELSE 'Unknown'
-                 END,
+                 s.matrix.name,
                  s.client.name,
                  s.contract.contractCode,
                  s.receivingDateTime

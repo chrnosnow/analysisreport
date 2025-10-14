@@ -1,5 +1,6 @@
 package com.example.analysisreport.samples.mapper;
 
+import com.example.analysisreport.matrix.entity.SampleMatrix;
 import com.example.analysisreport.samples.dto.*;
 import com.example.analysisreport.samples.entity.*;
 import org.mapstruct.*;
@@ -30,21 +31,41 @@ public interface SampleMapper {
     @Mapping(source = "matrix.id", target = "matrixId")
     @Mapping(source = "matrix.name", target = "matrixName")
     SoilSampleResponseDto toDto(SoilSample entity);
-    
+
 
     // ========== toEntity (DTO -> Entity) ==========
     // Responsible for translating a creation request into a new entity.
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "client", ignore = true) // The service will handle setting this.
-    @Mapping(target = "contract", ignore = true)
-    // will be set manually in the service
-    @Mapping(source = "waterType", target = "type")
-    @Mapping(target = "matrix", ignore = true)
-        // service sets this
-    WaterSample toEntity(WaterSampleCreateDto dto);
+//    @Mapping(target = "id", ignore = true)
+//    @Mapping(target = "createdAt", ignore = true)
+//    @Mapping(target = "updatedAt", ignore = true)
+//    @Mapping(target = "client", ignore = true) // The service will handle setting this.
+//    @Mapping(target = "contract", ignore = true)
+//    // will be set manually in the service
+//    @Mapping(source = "dto.waterType", target = "type")
+//        // the service sets this
+//    WaterSample toEntity(WaterSampleCreateDto dto, SampleMatrix sampleMatrix);
+
+    /**
+     * Custom mapping method to convert WaterSampleCreateDto to WaterSample entity.
+     * This method is used because we need to pass the SampleMatrix entity separately,
+     * which cannot be automatically mapped by MapStruct.
+     *
+     * @param dto          The DTO containing data for creating a WaterSample.
+     * @param sampleMatrix The SampleMatrix entity associated with the WaterSample.
+     * @return A new WaterSample entity populated with data from the DTO and associated SampleMatrix.
+     */
+    default WaterSample toEntity(WaterSampleCreateDto dto, SampleMatrix sampleMatrix) {
+        // the service will handle setting client and contract
+        // createdAt and updatedAt are auto-generated
+        WaterSample entity = new WaterSample(dto.getSampleCode(), sampleMatrix);
+        entity.setSamplingDateTime(dto.getSamplingDateTime());
+        entity.setReceivingDateTime(dto.getReceivingDateTime());
+        entity.setSampleLocationDetails(dto.getSampleLocationDetails());
+        entity.setType(dto.getWaterType());
+
+        return entity;
+    }
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -52,7 +73,6 @@ public interface SampleMapper {
     @Mapping(target = "client", ignore = true) // The service will handle setting this.
     @Mapping(target = "contract", ignore = true) // will be set manually in the service
     @Mapping(source = "sampleDepthCm", target = "samplingDepthCentimeters")
-    @Mapping(target = "matrix", ignore = true)
         // service sets this
     SoilSample toEntity(SoilSampleCreateDto dto);
 
@@ -67,7 +87,6 @@ public interface SampleMapper {
      * @param dto    The DTO containing updated values.
      * @param entity The existing WaterSample entity to be updated.
      */
-
     @Mapping(source = "waterType", target = "type")
     @Mapping(target = "contract", ignore = true)
     @Mapping(target = "createdAt", ignore = true)   // generated and should not be updated

@@ -7,6 +7,7 @@ import com.example.analysisreport.core.service.ValidationService;
 import com.example.analysisreport.exception.DuplicateResourceException;
 import com.example.analysisreport.exception.InvalidRequestException;
 import com.example.analysisreport.exception.ResourceNotFound;
+import com.example.analysisreport.matrix.entity.SampleMatrix;
 import com.example.analysisreport.samples.dto.*;
 import com.example.analysisreport.samples.entity.WaterSample;
 import com.example.analysisreport.samples.mapper.SampleMapper;
@@ -39,8 +40,11 @@ public class WaterSampleService extends AbstractSampleService<WaterSample, Water
     public WaterSampleResponseDto create(WaterSampleCreateDto dto) {
         Client client = validationService.loadClient(dto.getClientId());
         Contract contract = validationService.loadAndValidateContract(dto.getContractId(), client);
+        SampleMatrix sampleMatrix = validationService.loadSampleMatrix(dto.getMatrixId());
+        System.out.println("Sample Matrix loaded: " + sampleMatrix.getName());
         // map DTO to Entity
-        WaterSample waterSampleEntity = sampleMapper.toEntity(dto);
+        WaterSample waterSampleEntity = sampleMapper.toEntity(dto, sampleMatrix);
+        System.out.println("Mapped WaterSample entity: " + waterSampleEntity.getSampleCode() + waterSampleEntity.getMatrix().getName());
         // persist the sample
         WaterSample persistedEntity = sampleValidationService.persistSample(waterSampleEntity, dto.getSampleCode(), client, contract);
         // map Entity to Response DTO

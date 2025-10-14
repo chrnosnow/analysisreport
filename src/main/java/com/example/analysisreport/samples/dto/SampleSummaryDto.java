@@ -13,11 +13,8 @@ import java.time.LocalDateTime;
 public class SampleSummaryDto {
     private Long id;
     private String sampleCode;
-    private Long matrixId;
     private String matrixName;
-    private Long clientId;
     private String clientName;
-    private Long contractId;
     private String contractCode;
     private LocalDateTime receivingDateTime;
     // TODO

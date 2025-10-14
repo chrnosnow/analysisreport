@@ -15,14 +15,14 @@ import java.time.LocalDateTime;
 public abstract class BaseSampleResponseDto implements BaseResponseDto<Long> {
     private Long id;
     private String sampleCode;
-    private Long matrixId;
-    private String matrixName;
-    private Long contractId;
 
     // data for UI display
+    private Long matrixId;
+    private String matrixName;
     private Long clientId;
     private String clientName;
 
+    private Long contractId;
     private String sampleLocationDetails;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
