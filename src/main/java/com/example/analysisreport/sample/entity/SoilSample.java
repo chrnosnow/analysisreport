@@ -1,5 +1,6 @@
 package com.example.analysisreport.sample.entity;
 
+import com.example.analysisreport.matrix.entity.SampleMatrix;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,4 +27,8 @@ public class SoilSample extends Sample {
     @Enumerated(EnumType.STRING)
     @Column(name = "land_use", length = 100)
     private LandUse landUse;
+
+    public SoilSample(String sampleCode, SampleMatrix matrix) {
+        super(sampleCode, matrix);
+    }
 }

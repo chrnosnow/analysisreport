@@ -12,15 +12,19 @@ import com.example.analysisreport.sample.dto.*;
 import com.example.analysisreport.sample.entity.WaterSample;
 import com.example.analysisreport.sample.mapper.SampleMapper;
 import com.example.analysisreport.sample.repository.SampleRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
-public class WaterSampleService extends AbstractSampleService<WaterSample, WaterSampleCreateDto, WaterSampleUpdateDto, WaterSampleResponseDto> {
+public class WaterSampleService extends AbstractSampleService<WaterSample, WaterSampleCreateDto, WaterSampleUpdateDto
+        , WaterSampleResponseDto> {
 
-    public WaterSampleService(SampleRepository sampleRepo, SampleMapper samplemapper, SampleValidationService sampleValidationService, ValidationService validationService) {
+    public WaterSampleService(SampleRepository sampleRepo, SampleMapper samplemapper,
+                              SampleValidationService sampleValidationService, ValidationService validationService) {
         super(sampleRepo, samplemapper, sampleValidationService, validationService);
     }
 
@@ -41,12 +45,14 @@ public class WaterSampleService extends AbstractSampleService<WaterSample, Water
         Client client = validationService.loadClient(dto.getClientId());
         Contract contract = validationService.loadAndValidateContract(dto.getContractId(), client);
         SampleMatrix sampleMatrix = validationService.loadSampleMatrix(dto.getMatrixId());
-        System.out.println("Sample Matrix loaded: " + sampleMatrix.getName());
+        log.info("Sample Matrix loaded: {}", sampleMatrix.getName());
         // map DTO to Entity
         WaterSample waterSampleEntity = sampleMapper.toEntity(dto, sampleMatrix);
-        System.out.println("Mapped WaterSample entity: " + waterSampleEntity.getSampleCode() + waterSampleEntity.getMatrix().getName());
+        log.info("Mapped WaterSample entity: code={}, matrix={}", waterSampleEntity.getSampleCode(),
+                waterSampleEntity.getMatrix().getName());
         // persist the sample
-        WaterSample persistedEntity = sampleValidationService.persistSample(waterSampleEntity, dto.getSampleCode(), client, contract);
+        WaterSample persistedEntity = sampleValidationService.persistSample(waterSampleEntity, dto.getSampleCode(),
+                client, contract);
         // map Entity to Response DTO
         return sampleMapper.toDto(persistedEntity);
     }

@@ -50,10 +50,10 @@ public class CustomResultsRepositoryImpl implements CustomResultsRepository {
         for (Object[] obj : list) {
             AnalysisResult result = new AnalysisResult();
             result.setId((Long) obj[0]);
-            result.setSampleId((Long) obj[1]);
-            result.setReportId((Long) obj[2]);
-            result.setQualityIndicatorId((Long) obj[3]);
-            result.setResult(String.valueOf(obj[4]));
+            //            result.setSampleId((Long) obj[1]);
+            //            result.setReportId((Long) obj[2]);
+            //            result.setQualityIndicatorId((Long) obj[3]);
+            //            result.setResult(String.valueOf(obj[4]));
 
             analysisResultList.add(result);
         }

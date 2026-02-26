@@ -1,5 +1,6 @@
 package com.example.analysisreport.sample.entity;
 
+import com.example.analysisreport.matrix.entity.SampleMatrix;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,4 +21,9 @@ public class WasteSample extends Sample {
 
     @Column(name = "is_hazardous", nullable = false)
     private boolean isHazardous;
+
+    public WasteSample(String sampleCode, SampleMatrix matrix) {
+        super(sampleCode, matrix);
+    }
+
 }

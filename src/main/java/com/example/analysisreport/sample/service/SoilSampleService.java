@@ -7,19 +7,24 @@ import com.example.analysisreport.core.service.ValidationService;
 import com.example.analysisreport.exception.DuplicateResourceException;
 import com.example.analysisreport.exception.InvalidRequestException;
 import com.example.analysisreport.exception.ResourceNotFound;
+import com.example.analysisreport.matrix.entity.SampleMatrix;
 import com.example.analysisreport.sample.dto.*;
 import com.example.analysisreport.sample.entity.SoilSample;
 import com.example.analysisreport.sample.mapper.SampleMapper;
 import com.example.analysisreport.sample.repository.SampleRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
-public class SoilSampleService extends AbstractSampleService<SoilSample, SoilSampleCreateDto, SoilSampleUpdateDto, SoilSampleResponseDto> {
+public class SoilSampleService extends AbstractSampleService<SoilSample, SoilSampleCreateDto, SoilSampleUpdateDto,
+        SoilSampleResponseDto> {
 
-    public SoilSampleService(SampleRepository sampleRepository, SampleMapper sampleMapper, SampleValidationService sampleValidationService, ValidationService validationService) {
+    public SoilSampleService(SampleRepository sampleRepository, SampleMapper sampleMapper,
+                             SampleValidationService sampleValidationService, ValidationService validationService) {
         super(sampleRepository, sampleMapper, sampleValidationService, validationService);
     }
 
@@ -39,10 +44,14 @@ public class SoilSampleService extends AbstractSampleService<SoilSample, SoilSam
     public SoilSampleResponseDto create(SoilSampleCreateDto dto) {
         Client client = validationService.loadClient(dto.getClientId());
         Contract contract = validationService.loadAndValidateContract(dto.getContractId(), client);
+        SampleMatrix sampleMatrix = validationService.loadSampleMatrix(dto.getMatrixId());
         // map DTO to Entity
-        SoilSample soilSampleEntity = sampleMapper.toEntity(dto);
+        SoilSample soilSampleEntity = sampleMapper.toEntity(dto, sampleMatrix);
+        log.info("Mapped WaterSample entity: code={}, matrix={}", soilSampleEntity.getSampleCode(),
+                soilSampleEntity.getMatrix().getName());
         // persist entity to database
-        SoilSample persistedEntity = sampleValidationService.persistSample(soilSampleEntity, dto.getSampleCode(), client, contract);
+        SoilSample persistedEntity = sampleValidationService.persistSample(soilSampleEntity, dto.getSampleCode(),
+                client, contract);
         // map Entity to Response DTO
         return sampleMapper.toDto(persistedEntity);
     }

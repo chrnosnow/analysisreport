@@ -36,27 +36,30 @@ public interface SampleMapper {
     // ========== toEntity (DTO -> Entity) ==========
     // Responsible for translating a creation request into a new entity.
 
-//    @Mapping(target = "id", ignore = true)
-//    @Mapping(target = "createdAt", ignore = true)
-//    @Mapping(target = "updatedAt", ignore = true)
-//    @Mapping(target = "client", ignore = true) // The service will handle setting this.
-//    @Mapping(target = "contract", ignore = true)
-//    // will be set manually in the service
-//    @Mapping(source = "dto.waterType", target = "type")
-//        // the service sets this
-//    WaterSample toEntity(WaterSampleCreateDto dto, SampleMatrix sampleMatrix);
+    //    @Mapping(target = "id", ignore = true)
+    //    @Mapping(target = "createdAt", ignore = true)
+    //    @Mapping(target = "updatedAt", ignore = true)
+    //    @Mapping(target = "client", ignore = true) // The service will handle setting this.
+    //    @Mapping(target = "contract", ignore = true)
+    //    // will be set manually in the service
+    //    @Mapping(source = "dto.waterType", target = "type")
+    //        // the service sets this
+    //    WaterSample toEntity(WaterSampleCreateDto dto, SampleMatrix sampleMatrix);
 
     /**
      * Custom mapping method to convert WaterSampleCreateDto to WaterSample entity.
-     * This method is used because we need to pass the SampleMatrix entity separately,
-     * which cannot be automatically mapped by MapStruct.
+     * Caller responsibilities:
+     * - The service must validate and resolve dto.getMatrixId() to a non-null SampleMatrix and pass it as sampleMatrix.
+     * - The service must validate and set `client` and optionally `contract` on the returned entity before persisting.
+     * <p>
+     * This mapper intentionally does NOT perform defensive null checks; validation belongs in the service layer.
      *
      * @param dto          The DTO containing data for creating a WaterSample.
-     * @param sampleMatrix The SampleMatrix entity associated with the WaterSample.
+     * @param sampleMatrix The resolved SampleMatrix entity associated with the WaterSample (must not be null).
      * @return A new WaterSample entity populated with data from the DTO and associated SampleMatrix.
      */
     default WaterSample toEntity(WaterSampleCreateDto dto, SampleMatrix sampleMatrix) {
-        // the service will handle setting client and contract
+        // the service will handle null checks and setting client and contract
         // createdAt and updatedAt are auto-generated
         WaterSample entity = new WaterSample(dto.getSampleCode(), sampleMatrix);
         entity.setSamplingDateTime(dto.getSamplingDateTime());
@@ -67,14 +70,28 @@ public interface SampleMapper {
         return entity;
     }
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "client", ignore = true) // The service will handle setting this.
-    @Mapping(target = "contract", ignore = true) // will be set manually in the service
-    @Mapping(source = "sampleDepthCm", target = "samplingDepthCentimeters")
-        // service sets this
-    SoilSample toEntity(SoilSampleCreateDto dto);
+    /**
+     * Custom mapping method to convert SoilSampleCreateDto to SoilSample entity.
+     * This method uses the constructor for inherited fields (sampleCode, matrix) and then
+     * sets SoilSample-specific fields to build a complete entity.
+     * Note: The Lombok @Builder on SoilSample does not include inherited fields from Sample,
+     * so we use the constructor to initialize parent fields properly.
+     *
+     * @param dto          The DTO containing data for creating a SoilSample.
+     * @param sampleMatrix The SampleMatrix entity associated with the SoilSample.
+     * @return A new SoilSample entity populated with data from the DTO and associated SampleMatrix.
+     */
+    default SoilSample toEntity(SoilSampleCreateDto dto, SampleMatrix sampleMatrix) {
+        SoilSample entity = new SoilSample(dto.getSampleCode(), sampleMatrix);
+        entity.setSamplingDateTime(dto.getSamplingDateTime());
+        entity.setReceivingDateTime(dto.getReceivingDateTime());
+        entity.setSampleLocationDetails(dto.getSampleLocationDetails());
+        entity.setSamplingDepthCentimeters(dto.getSampleDepthCm());
+        entity.setSoilTexture(dto.getSoilTexture());
+        entity.setColor(dto.getColor());
+        entity.setLandUse(dto.getLandUse());
+        return entity;
+    }
 
 
     // ========== for Updates (DTO -> Existing Entity) ==========
@@ -109,7 +126,8 @@ public interface SampleMapper {
     @Mapping(target = "matrix", ignore = true) // matrix should not be updated
     @Mapping(target = "id", ignore = true)
         // telling MapStruct to ignore the id field, as it should not be updated
-        // the id is identified as null in save() and thus tries to create a new entity instead of updating the existing one
+        // the id is identified as null in save() and thus tries to create a new entity instead of updating the
+        // existing one
     void updateEntityFromDto(SoilSampleUpdateDto dto, @MappingTarget SoilSample entity);
 
 }
